@@ -14,8 +14,9 @@
         android:theme="@style/Theme.ShowsLovreNinčević"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".LoginActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar">  <!-- A custom theme that hides the action bar -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

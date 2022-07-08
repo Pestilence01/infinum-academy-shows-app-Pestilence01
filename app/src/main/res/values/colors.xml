@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="dark_purple">#3D1D72</color>
+    <color name="transparent_grey">#80BBBBBB</color>
+
+    <color name="mtrl_textinput_default_box_stroke_color">#FFFFFF</color>
+    <!-- this forces the outline stroke of the the input text to be white when unfocused -->
 </resources>
