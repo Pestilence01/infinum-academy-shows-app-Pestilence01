@@ -13,4 +13,6 @@
 
     <color name="mtrl_textinput_default_box_stroke_color">#FFFFFF</color>
     <!-- this forces the outline stroke of the the input text to be white when unfocused -->
+
+    <color name="button_disabled_text_color_login">#CCFFFFFF</color>
 </resources>

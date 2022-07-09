@@ -69,6 +69,7 @@
             android:id="@+id/ET_password_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textPassword"
             app:boxStrokeColor="@color/white"
             android:textColorHint="@color/white"
             android:textColor="@color/white"
@@ -94,7 +95,7 @@
         >
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/email"
+            android:id="@+id/ET_email_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:boxStrokeColor="@color/white"
@@ -137,12 +138,14 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         android:background="@drawable/rounded_button_login_toggled_on"
+        android:enabled="false"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="32dp"
+        android:textAllCaps="false"
         android:text="Login"
         android:textSize="17dp"
-        android:textColor="@color/dark_purple"
+        android:textColor="@drawable/button_text_color_login"
         android:textStyle="bold"
         />
 
