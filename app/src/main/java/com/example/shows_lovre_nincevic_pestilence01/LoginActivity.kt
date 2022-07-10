@@ -56,10 +56,12 @@ class LoginActivity : AppCompatActivity() {
 
         binding.buttonLogin.setOnClickListener {
 
-            var emailPattern: Regex = Regex(".+@.+") // pattern ensures that there is at least one character before "@" and at least one character after "@", the "@" is always present
+            // The functionality to authenticate the user's email and password should also be implemented, but I do not have access to any sort of database so it is impossible this early on
+
+            val emailPattern: Regex = Regex(".+@.+") // pattern ensures that there is at least one character before "@" and at least one character after "@", the "@" is always present
 
             if(emailPattern.containsMatchIn(binding.ETEmailLogin.text.toString())) {
-                var intent: Intent = Intent(this, WelcomeActivity::class.java)
+                val intent: Intent = Intent("start_welcome_activity")   // This intent is IMPLICIT and is defined in the Android Manifest
                 intent.putExtra("EXTRA_EMAIL_KEY", binding.ETEmailLogin.text.toString())
                 startActivity(intent)
                 Toast.makeText(this, "You have successfully logged in!", Toast.LENGTH_SHORT).show()
