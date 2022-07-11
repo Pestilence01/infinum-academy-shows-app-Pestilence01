@@ -21,8 +21,8 @@ class WelcomeActivity : AppCompatActivity() {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         // this line hides the top of the screen (battery life, time, wifi...) allowing the application to take up the entire screen
 
-        if(intent.hasExtra("EXTRA_EMAIL_KEY")){
-            email = intent.getStringExtra("EXTRA_EMAIL_KEY").toString()
+        if(intent.hasExtra(Constants.LOGIN_EMAIL_KEY)){
+            email = intent.getStringExtra(Constants.LOGIN_EMAIL_KEY).toString()
         }
 
         val result: String = "Welcome, " + email.split("@")[0] + "!"    // The split function returns a list of Strings so we can easily concatenate

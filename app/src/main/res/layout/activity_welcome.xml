@@ -34,10 +34,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/welcome_screen_logo"
-        android:layout_marginTop="31dp"
-        android:text="Welcome"
-        android:textSize="17sp"
+        android:layout_marginTop="@dimen/TV_welcome_screen_email_margin_top"
+        android:textSize="@dimen/TV_welcome_screen_email_text_size"
         android:textStyle="bold"
+        android:text="@string/welcome"
 
         />
 

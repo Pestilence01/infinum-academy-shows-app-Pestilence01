@@ -62,8 +62,9 @@ class LoginActivity : AppCompatActivity() {
 
             if(emailPattern.containsMatchIn(binding.ETEmailLogin.text.toString())) {
                 val intent: Intent = Intent("start_welcome_activity")   // This intent is IMPLICIT and is defined in the Android Manifest
-                intent.putExtra("EXTRA_EMAIL_KEY", binding.ETEmailLogin.text.toString())
+                intent.putExtra(Constants.LOGIN_EMAIL_KEY, binding.ETEmailLogin.text.toString())
                 startActivity(intent)
+                //finish()      -- if the user logs in, there is no reason for the Login activity to be active but for the purpose of testing I decided to leave this as is
                 Toast.makeText(this, "You have successfully logged in!", Toast.LENGTH_SHORT).show()
             }
             else {
