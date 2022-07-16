@@ -61,7 +61,7 @@ class LoginActivity : AppCompatActivity() {
             val emailPattern: Regex = Regex(".+@.+") // pattern ensures that there is at least one character before "@" and at least one character after "@", the "@" is always present
 
             if(emailPattern.containsMatchIn(binding.ETEmailLogin.text.toString())) {
-                val intent: Intent = Intent("start_welcome_activity")   // This intent is IMPLICIT and is defined in the Android Manifest
+                val intent: Intent = Intent(this, ShowsActivity::class.java)
                 intent.putExtra(Constants.LOGIN_EMAIL_KEY, binding.ETEmailLogin.text.toString())
                 startActivity(intent)
                 //finish()      -- if the user logs in, there is no reason for the Login activity to be active but for the purpose of testing I decided to leave this as is
