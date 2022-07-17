@@ -24,6 +24,8 @@ class LoginActivity : AppCompatActivity() {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         // this line hides the top of the screen (battery life, time, wifi...) allowing the application to take up the entire screen
 
+
+
         binding.ETEmailLogin.addTextChangedListener(object : TextWatcher {
 
 
@@ -68,7 +70,7 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "You have successfully logged in!", Toast.LENGTH_SHORT).show()
             }
             else {
-                binding.ETEmailLogin.setError("Please enter a valid email address!!")!!
+                binding.ETEmailLogin.setError("Please enter a valid email address!!")
             }
         }
     }
@@ -77,9 +79,9 @@ class LoginActivity : AppCompatActivity() {
     private fun checkInput(binding: ActivityLoginBinding) {
 
         if(binding.ETEmailLogin.text.toString().isBlank() || binding.ETPasswordLogin.text.toString().length < 6)
-            binding.buttonLogin.setEnabled(false)!!
+            binding.buttonLogin.setEnabled(false)
 
-        else binding.buttonLogin.setEnabled(true)!!
+        else binding.buttonLogin.setEnabled(true)
     }
 
 

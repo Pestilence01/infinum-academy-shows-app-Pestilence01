@@ -24,9 +24,9 @@ class ReviewsAdapter(
     inner class ReviewViewHolder(private val binding: ReviewItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Review){
-            binding.CIVProfile.setImageResource(item.profileImageResourceID)
-            binding.TVUsername.text = item.username
-            binding.TVComment.text = item.comment
+            binding.profileCircularImage.setImageResource(item.profileImageResourceID)
+            binding.username.text = item.username
+            binding.comment.text = item.comment
             binding.score.text = item.rating.toString()
         }
     }

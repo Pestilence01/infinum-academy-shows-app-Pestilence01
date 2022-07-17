@@ -4,14 +4,14 @@
     android:layout_height="300dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:padding="8dp"
+    android:padding="@dimen/spacing_1x"
     android:clipToPadding="false">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/show_card_view"
+        android:id="@+id/showCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="8dp"
+        app:cardCornerRadius="@dimen/spacing_1x"
         android:foreground="?android:attr/selectableItemBackground"
         android:clickable="true">
 
@@ -21,32 +21,32 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/show_item_image"
+                android:id="@+id/showItemImage"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                tools:src="@drawable/ic_office"
+                tools:src="@drawable/the_office"
                 android:scaleType="centerCrop"/>
 
             <TextView
-                android:id="@+id/show_item_title"
+                android:id="@+id/showItemTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginLeft="@dimen/spacing_1x"
+                android:layout_marginTop="@dimen/spacing_1x"
                 android:textColor="@color/black"
-                android:textSize="20dp"
+                android:textSize="@dimen/spacing_text_3x"
                 android:textStyle="bold"
                 tools:text="The Office" />
 
             <TextView
-                android:id="@+id/show_item_description"
+                android:id="@+id/showItemDescription"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-                android:layout_marginLeft="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:textSize="14dp" />
+                android:layout_marginLeft="@dimen/spacing_1x"
+                android:layout_marginBottom="@dimen/spacing_1x"
+                android:layout_marginTop="@dimen/spacing_1x"
+                android:textSize="@dimen/spacing_text_2x" />
 
         </LinearLayout>
 

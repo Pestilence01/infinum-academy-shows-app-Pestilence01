@@ -36,6 +36,18 @@
     <dimen name="TV_welcome_screen_email_text_size">17sp</dimen>
     <dimen name="TV_welcome_screen_email_margin_top">31dp</dimen>
 
+    <dimen name="spacing_1x">8dp</dimen>
+    <dimen name="spacing_2x">16dp</dimen>
+    <dimen name="spacing_3x">24dp</dimen>
+    <dimen name="spacing_4x">32dp</dimen>
+    <dimen name="spacing_5x">40dp</dimen>
+
+    <dimen name="spacing_text_1x">8sp</dimen>
+    <dimen name="spacing_text_2x">16sp</dimen>
+    <dimen name="spacing_text_3x">24sp</dimen>
+    <dimen name="spacing_text_4x">32sp</dimen>
+    <dimen name="spacing_text_5x">40sp</dimen>
+
 
 
 </resources>

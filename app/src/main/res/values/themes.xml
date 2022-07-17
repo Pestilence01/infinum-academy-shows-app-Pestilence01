@@ -48,10 +48,7 @@
         <item name="boxStrokeWidth">2dp</item>
     </style>
 
-    <style name="DialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/slide_in_bottom_animation</item>
-        <item name="android:windowExitAnimation">@anim/slide_out_bottom_animation</item>
-    </style>
+
 
     <style name="Theme.BottomSheetLayout" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->

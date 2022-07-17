@@ -3,7 +3,6 @@ package com.example.shows_lovre_nincevic_pestilence01
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
-import android.view.ScrollCaptureCallback
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shows_lovre_nincevic_pestilence01.databinding.ShowItemBinding
@@ -38,8 +37,8 @@ class ShowsAdapter(
 
             binding.showCardView.setOnClickListener {
                 val intent: Intent = Intent(context, ShowDetailsActivity::class.java)
-                intent.putExtra("Show", items[position])
-                intent.putExtra(Constants.LOGIN_EMAIL_KEY, username.split("@")[0])
+                intent.putExtra(Constants.SHOW_EXTRA_KEY, items[position])  // parcelable extra
+                intent.putExtra(Constants.LOGIN_EMAIL_KEY, username.split("@")[0])    // Passes the "username", which, for simplicity sake, is the part of the email before the "@"
                 context.startActivity(intent)
             }
         }

@@ -5,8 +5,8 @@
         android:color="@color/white"/>
 
     <corners
-        android:topLeftRadius="30dp"
-        android:topRightRadius="30dp"
+        android:topLeftRadius="@dimen/spacing_4x"
+        android:topRightRadius="@dimen/spacing_4x"
         />
 
 </shape>

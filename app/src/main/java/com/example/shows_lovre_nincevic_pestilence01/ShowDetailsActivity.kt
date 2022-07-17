@@ -2,18 +2,14 @@ package com.example.shows_lovre_nincevic_pestilence01
 
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Button
-import android.widget.EditText
 import android.widget.RatingBar
 import android.widget.Toast
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shows_lovre_nincevic_pestilence01.databinding.ActivityShowDetailsBinding
-import com.example.shows_lovre_nincevic_pestilence01.databinding.BottomSheetReviewLayoutBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
 import java.math.RoundingMode
@@ -24,7 +20,6 @@ class ShowDetailsActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityShowDetailsBinding
-    private lateinit var bottomSheetBinding: BottomSheetReviewLayoutBinding
     private lateinit var adapter: ReviewsAdapter
     private lateinit var reviewList: ArrayList<Review>
     private lateinit var show: Show
@@ -38,8 +33,8 @@ class ShowDetailsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        if(intent.hasExtra("Show")){
-            show = intent.getParcelableExtra<Show>("Show")!!
+        if(intent.hasExtra(Constants.SHOW_EXTRA_KEY)){
+            show = intent.getParcelableExtra<Show>(Constants.SHOW_EXTRA_KEY)!!
         }
 
         if(intent.hasExtra(Constants.LOGIN_EMAIL_KEY)){
@@ -54,22 +49,38 @@ class ShowDetailsActivity : AppCompatActivity() {
             binding.noReviews.visibility = View.VISIBLE
         }
 
-        binding.tvTitle.text = show.title
+        binding.showTitleActionBar.text = show.title
+        binding.showTitle.text = show.title
         binding.showDescription.text = show.description
         binding.showPicture.setImageResource(show.imageResourceID)
 
-        updateAverageReview()
+        updateAverageReview()  // Sets up the review scores and adjusts them when a new review is posted
 
         if(checkIfReviewPosted()){
             toggleReviewButtonOff()
         }
 
-        setupActionBar()
+        setupActionBar()  // Sets up the action bad
 
         initReviewsRecyclerView()
 
+        binding.mainScreenScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->      //Changes the ActionBar when scrolled. It looks janky, but I am sure a custom animation could fix it. I will look into this in the future.
+            if(scrollY > 0){
+                supportActionBar?.elevation = 10f
+                supportActionBar?.title = ""
+                binding.showTitleActionBar.visibility = View.VISIBLE
+                binding.showTitle.visibility = View.GONE
+            }
+            else{
+                supportActionBar?.elevation = 0f
+                binding.showTitleActionBar.visibility = View.GONE
+                binding.showTitle.visibility = View.VISIBLE
+            }
+
+        }
+
         binding.addReviewButton.setOnClickListener {
-            val bottomSheetDialog = BottomSheetDialog(
+            val bottomSheetDialog = BottomSheetDialog(         // Created bottom sheet dialog
                 this, R.style.BottomSheetDialogTheme
             )
 
@@ -79,7 +90,7 @@ class ShowDetailsActivity : AppCompatActivity() {
             bottomSheetDialog.setContentView(bottomSheetView)
             bottomSheetDialog.show()
 
-            val submit: Button? = bottomSheetDialog.findViewById<Button>(R.id.submitButton)
+            val submit: Button? = bottomSheetDialog.findViewById<Button>(R.id.submitButton)      // I couldn't find a way to bind the elements from the dialog so I used the old fashioned findViewById way. If you, reader, know how to fix this problem, I would appreciate it.
             val rating: RatingBar? = bottomSheetDialog.findViewById<RatingBar>(R.id.ratingBar)
             val review: TextInputEditText? = bottomSheetDialog.findViewById(R.id.review)
 
@@ -87,7 +98,7 @@ class ShowDetailsActivity : AppCompatActivity() {
                 val newReview = Review(review?.text.toString(), username, rating!!.rating.toInt(), R.drawable.ic_profile_placeholder)
                 reviewList.add(newReview)
                 adapter.notifyItemInserted(reviewList.size - 1)
-                if(reviewList.size == 1){
+                if(reviewList.size == 1){   // If this is the first review, it adjusts the UI
                     binding.layoutReviews.visibility = View.VISIBLE
                     binding.noReviews.visibility = View.GONE
                 }
@@ -132,6 +143,7 @@ class ShowDetailsActivity : AppCompatActivity() {
         val result = df.format(sum.toDouble() / amountOfReviews)
 
         binding.averageReview.text = "$amountOfReviews REVIEWS, $result AVERAGE"
+        binding.ratingBar.rating = result.toFloat()
     }
 
      private fun setupActionBar() {
@@ -142,6 +154,7 @@ class ShowDetailsActivity : AppCompatActivity() {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24)
+            actionBar.elevation = 5f   // Adds a divider between action bar and main screen
         }
 
         binding.toolbarShowDetailsActivity.setNavigationOnClickListener { onBackPressed() }

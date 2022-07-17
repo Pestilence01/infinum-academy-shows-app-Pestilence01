@@ -14,12 +14,12 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="Write a review"
-        android:textSize="24sp"
+        android:text="@string/write_a_review"
+        android:textSize="@dimen/spacing_text_3x"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginStart="@dimen/spacing_2x"
+        android:layout_marginTop="@dimen/spacing_2x"/>
 
     <ImageView
         android:id="@+id/dismissBottomSheet"
@@ -28,8 +28,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/ic_cancel"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="24dp"/>
+        android:layout_marginEnd="@dimen/spacing_2x"
+        android:layout_marginTop="@dimen/spacing_3x"/>
 
     <RatingBar
         android:id="@+id/ratingBar"
@@ -39,19 +39,19 @@
         android:stepSize="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/writeReview"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginStart="@dimen/spacing_2x"
+        android:layout_marginTop="@dimen/spacing_2x"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/reviewComment"
         style="@style/TextInputLayoutStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/TIL_email_login_margin_top"
-        android:layout_marginEnd="@dimen/TIL_email_login_margin_end"
-        android:layout_marginStart="@dimen/TIL_email_login_margin_start"
+        android:layout_marginTop="@dimen/spacing_2x"
+        android:layout_marginEnd="@dimen/spacing_3x"
+        android:layout_marginStart="@dimen/spacing_3x"
         app:boxStrokeColor="@color/text_input_layout_review_color"
-        android:hint="Write a review"
+        android:hint="@string/write_a_review_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ratingBar"
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@color/dark_purple"
             android:textColor="@color/black"
-            android:textSize="@dimen/ET_email_login_text_size"
+            android:textSize="@dimen/spacing_text_2x"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -74,16 +74,16 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/reviewComment"
         android:background="@drawable/rounded_button_submit_review"
-        android:layout_marginTop="32dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:text="submit"
+        android:layout_marginTop="@dimen/spacing_4x"
+        android:layout_marginStart="@dimen/spacing_3x"
+        android:layout_marginEnd="@dimen/spacing_3x"
+        android:text="@string/submit"
         android:textColor="@color/white"
         android:textStyle="bold"/>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="32dp"
+        android:layout_height="@dimen/spacing_4x"
         app:layout_constraintTop_toBottomOf="@id/submitButton"/>
 
 

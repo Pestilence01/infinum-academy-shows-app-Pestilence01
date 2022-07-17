@@ -1,6 +1,5 @@
 package com.example.shows_lovre_nincevic_pestilence01
 
-import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -35,7 +34,7 @@ class ShowsActivity : AppCompatActivity() {
         // showsList = listOf()     --> uncomment this line to show EmptyState
 
         if(showsList.isEmpty()){
-            binding.RVShows.visibility = View.GONE
+            binding.showsRecyclerView.visibility = View.GONE
             binding.constraintLayoutEmptyState.visibility = View.VISIBLE
         }
 
@@ -44,14 +43,14 @@ class ShowsActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadShows(): List<Show> {
+    private fun loadShows(): List<Show> {   // Returns hard coded shows
 
         return listOf(
             Show(
                 "id_office",
                 "The Office",
                 "The Office is an American mockumentary sitcom television series that depicts the everyday work lives of office employees in the Scranton, Pennsylvania, branch of the fictional Dunder Mifflin Paper Company. It aired on NBC from March 24, 2005, to May 16, 2013, lasting a total of nine seasons.",
-                R.drawable.the_office_large,
+                R.drawable.the_office,
                 ArrayList<Review>(loadReviews("office"))
             ),
             Show(
@@ -71,12 +70,12 @@ class ShowsActivity : AppCompatActivity() {
         )
     }
 
-    private fun loadReviews(showID : String): List<Review> {
+    private fun loadReviews(showID : String): List<Review> {  // Returns hard coded custom comments for every show
 
         when (showID) {
 
             "office" -> return listOf(
-                Review("I love it!","Obi Wan", 5, R.drawable.ic_profile_placeholder),
+                Review("These are the droids we are looking for!","Obi Wan", 5, R.drawable.ic_profile_placeholder),
                 Review("MHM excellent it is! But resist the dark side fully it does not!","Yoda", 4, R.drawable.ic_profile_placeholder),
                 Review("Nothing compared to the power of the dark side!","Darth Vader", 1, R.drawable.ic_profile_placeholder)
             )
@@ -97,7 +96,7 @@ class ShowsActivity : AppCompatActivity() {
     private fun initShowsRecyclerView() {
         adapter = ShowsAdapter(this, username, showsList)
 
-        binding.RVShows.layoutManager = LinearLayoutManager(this)
-        binding.RVShows.adapter = adapter
+        binding.showsRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.showsRecyclerView.adapter = adapter
     }
 }

@@ -7,28 +7,27 @@
     tools:context=".ShowsActivity">
 
     <TextView
-        android:id="@+id/TV_title_shows"
+        android:id="@+id/titleShows"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="Shows"
-        android:textSize="36sp"
+        android:text="@string/shows"
+        android:textSize="@dimen/spacing_text_4x"
         android:textColor="@color/black"
         android:textStyle="bold"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"/>
+        android:layout_marginStart="@dimen/spacing_3x"
+        android:layout_marginTop="@dimen/spacing_4x"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/RV_shows"
+        android:id="@+id/showsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginTop="@dimen/spacing_1x"
         android:orientation="vertical"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/TV_title_shows"
+        app:layout_constraintTop_toBottomOf="@id/titleShows"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/show_item" />
 
@@ -40,7 +39,7 @@
         android:visibility="gone">
 
         <ImageView
-            android:id="@+id/IV_shows_ellipse"
+            android:id="@+id/showsEllipse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -65,11 +64,11 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/IV_shows_ellipse"
-            android:text="Your shows are not showing, get it?"
-            android:textColor="#808080"
-            android:textSize="17sp"
-            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/showsEllipse"
+            android:text="@string/your_shows_are_not_showing_get_it"
+            android:textColor="@color/transparent_grey"
+            android:textSize="@dimen/spacing_text_2x"
+            android:layout_marginTop="@dimen/spacing_2x"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
