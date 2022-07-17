@@ -2,11 +2,10 @@ package com.example.shows_lovre_nincevic_pestilence01
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import com.example.shows_lovre_nincevic_pestilence01.databinding.ActivityLoginBinding
 
 
@@ -21,65 +20,47 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
         // this line hides the top of the screen (battery life, time, wifi...) allowing the application to take up the entire screen
 
-        binding.ETEmailLogin.addTextChangedListener(object : TextWatcher {
+        binding.emailLoginText.doOnTextChanged { _, _, _, _ ->
+            toggleButtonEnabled()
+        }
 
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                checkInput(binding)
-            }
-
-            override fun afterTextChanged(s: Editable) {
-                // Unnecessary
-            }
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                // Unnecessary
-            }
-        })
-
-        binding.ETPasswordLogin.addTextChangedListener(object : TextWatcher {
-
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                checkInput(binding)
-            }
-
-            override fun afterTextChanged(s: Editable) {
-                // Unnecessary
-            }
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                // Unnecessary
-            }
-        })
-
-        binding.buttonLogin.setOnClickListener {
+        binding.ETPasswordLogin.doOnTextChanged { _, _, _, _ ->
+            toggleButtonEnabled()
+        }
+        binding.loginButton.setOnClickListener {
 
             // The functionality to authenticate the user's email and password should also be implemented, but I do not have access to any sort of database so it is impossible this early on
 
-            val emailPattern: Regex = Regex(".+@.+") // pattern ensures that there is at least one character before "@" and at least one character after "@", the "@" is always present
+            val emailPattern: Regex =
+                Regex(".+@.+[.].*") // pattern ensures that there is at least one character before "@" and at least one character after "@", the "@" is always present. Updated to account for the domain
 
-            if(emailPattern.containsMatchIn(binding.ETEmailLogin.text.toString())) {
-                val intent: Intent = Intent("start_welcome_activity")   // This intent is IMPLICIT and is defined in the Android Manifest
-                intent.putExtra(Constants.LOGIN_EMAIL_KEY, binding.ETEmailLogin.text.toString())
+            if (emailPattern.containsMatchIn(binding.emailLoginText.text.toString())) {
+                val intent: Intent =
+                    Intent("start_welcome_activity")   // This intent is IMPLICIT and is defined in the Android Manifest
+                intent.putExtra(Constants.LOGIN_EMAIL_KEY, binding.emailLoginText.text.toString())
                 startActivity(intent)
                 //finish()      -- if the user logs in, there is no reason for the Login activity to be active but for the purpose of testing I decided to leave this as is
                 Toast.makeText(this, "You have successfully logged in!", Toast.LENGTH_SHORT).show()
-            }
-            else {
-                binding.ETEmailLogin.setError("Please enter a valid email address!!")!!
+            } else {
+                binding.emailLoginText.setError("Please enter a valid email address!!")
             }
         }
     }
 
     //This function checks whether the email is blank and if the password field has less than 6 characters. If that is the case, the button will be disabled
-    private fun checkInput(binding: ActivityLoginBinding) {
+    private fun toggleButtonEnabled() {
 
-        if(binding.ETEmailLogin.text.toString().isBlank() || binding.ETPasswordLogin.text.toString().length < 6)
-            binding.buttonLogin.setEnabled(false)!!
-
-        else binding.buttonLogin.setEnabled(true)!!
+        if (binding.emailLoginText.text.toString()
+                .isBlank() || binding.ETPasswordLogin.text.toString().length < 6
+        )
+            binding.loginButton.setEnabled(false)
+        else binding.loginButton.setEnabled(true)
     }
 
 

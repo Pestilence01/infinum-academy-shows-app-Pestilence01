@@ -18,14 +18,18 @@ class WelcomeActivity : AppCompatActivity() {
         binding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
         // this line hides the top of the screen (battery life, time, wifi...) allowing the application to take up the entire screen
 
-        if(intent.hasExtra(Constants.LOGIN_EMAIL_KEY)){
+        if (intent.hasExtra(Constants.LOGIN_EMAIL_KEY)) {
             email = intent.getStringExtra(Constants.LOGIN_EMAIL_KEY).toString()
         }
 
-        val result: String = "Welcome, " + email.split("@")[0] + "!"    // The split function returns a list of Strings so we can easily concatenate
+        val result: String =
+            "Welcome, " + email.split("@")[0] + "!"    // The split function returns a list of Strings so we can easily concatenate
 
         binding.TVWelcomeScreenEmail.text = result
 
