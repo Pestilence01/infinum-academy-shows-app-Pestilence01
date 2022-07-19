@@ -41,6 +41,9 @@
     <dimen name="spacing_3x">24dp</dimen>
     <dimen name="spacing_4x">32dp</dimen>
     <dimen name="spacing_5x">40dp</dimen>
+    <dimen name="spacing_22x">176dp</dimen>
+    <dimen name="spacing_10x">80dp</dimen>
+    <dimen name="spacing_13x">104dp</dimen>
 
     <dimen name="spacing_text_1x">8sp</dimen>
     <dimen name="spacing_text_2x">16sp</dimen>

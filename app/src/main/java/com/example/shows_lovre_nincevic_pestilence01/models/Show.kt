@@ -1,4 +1,4 @@
-package com.example.shows_lovre_nincevic_pestilence01
+package com.example.shows_lovre_nincevic_pestilence01.models
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
