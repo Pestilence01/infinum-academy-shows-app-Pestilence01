@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">Shows-Lovre-Ninčević</string>
+    <string name="app_name">Shows</string>
+
+    <string name="content_description">login_image</string>
+    <string name="input_credentials">In order to continue please log in</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+
+    <string name="welcome">Welcome</string>
 </resources>

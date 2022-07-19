@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- this .xml defines the look of the button in enabled/disabled mode-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="true">
+        <shape>
+            <corners android:radius="24dp" />
+
+            <solid android:color="@color/white" />
+
+        </shape>
+    </item>
+
+    <item android:state_enabled="false">
+        <shape>
+            <corners android:radius="24dp" />
+
+            <solid android:color="@color/transparent_grey" />
+
+        </shape>
+    </item>
+
+</selector>
