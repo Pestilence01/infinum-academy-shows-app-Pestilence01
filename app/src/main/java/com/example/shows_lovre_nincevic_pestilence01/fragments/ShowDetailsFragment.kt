@@ -1,46 +1,60 @@
-package com.example.shows_lovre_nincevic_pestilence01
+package com.example.shows_lovre_nincevic_pestilence01.fragments
 
-
+import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.ContextThemeWrapper
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.shows_lovre_nincevic_pestilence01.R
+import com.example.shows_lovre_nincevic_pestilence01.adapters.ReviewsAdapter
 import com.example.shows_lovre_nincevic_pestilence01.databinding.ActivityShowDetailsBinding
+import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentLoginBinding
+import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowDetailsBinding
+import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowsBinding
+import com.example.shows_lovre_nincevic_pestilence01.models.Review
+import com.example.shows_lovre_nincevic_pestilence01.models.Show
+import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
 
-class ShowDetailsActivity : AppCompatActivity() {
+class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
+    private var _binding: FragmentShowDetailsBinding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var binding: ActivityShowDetailsBinding
     private lateinit var adapter: ReviewsAdapter
     private lateinit var reviewList: ArrayList<Review>
     private lateinit var show: Show
     private lateinit var username: String
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_show_details)
-
-        binding = ActivityShowDetailsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
 
-        if(intent.hasExtra(Constants.SHOW_EXTRA_KEY)){
-            show = intent.getParcelableExtra<Show>(Constants.SHOW_EXTRA_KEY)!!
-        }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        _binding = FragmentShowDetailsBinding.inflate(inflater,container,false)
+        return binding.root
+    }
 
-        if(intent.hasExtra(Constants.LOGIN_EMAIL_KEY)){
-            username = intent.getStringExtra(Constants.LOGIN_EMAIL_KEY)!!
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
+        show = arguments!!.get(Constants.SHOW_EXTRA_KEY) as Show
+        username = arguments!!.getString(Constants.LOGIN_EMAIL_KEY).toString()
 
         reviewList = show.reviews
 
@@ -60,19 +74,19 @@ class ShowDetailsActivity : AppCompatActivity() {
             toggleReviewButtonOff()
         }
 
-        setupActionBar()  // Sets up the action bad
+        setupActionBar()  // Sets up the action bar
 
         initReviewsRecyclerView()
 
         binding.mainScreenScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->      //Changes the ActionBar when scrolled. It looks janky, but I am sure a custom animation could fix it. I will look into this in the future.
             if(scrollY > 0){
-                supportActionBar?.elevation = 10f
-                supportActionBar?.title = ""
+                (activity as AppCompatActivity).supportActionBar?.elevation = 10f
+                (activity as AppCompatActivity).supportActionBar?.title = ""
                 binding.showTitleActionBar.visibility = View.VISIBLE
                 binding.showTitle.visibility = View.GONE
             }
             else{
-                supportActionBar?.elevation = 0f
+                (activity as AppCompatActivity).supportActionBar?.elevation = 0f
                 binding.showTitleActionBar.visibility = View.GONE
                 binding.showTitle.visibility = View.VISIBLE
             }
@@ -81,11 +95,15 @@ class ShowDetailsActivity : AppCompatActivity() {
 
         binding.addReviewButton.setOnClickListener {
             val bottomSheetDialog = BottomSheetDialog(         // Created bottom sheet dialog
-                this, R.style.BottomSheetDialogTheme
+                activity!!, R.style.BottomSheetDialogTheme
             )
 
-            val bottomSheetView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_review_layout, findViewById(R.id.bottomSheet))
+            val bottomSheetView = LayoutInflater.from(activity).inflate(
+                R.layout.bottom_sheet_review_layout, activity!!.findViewById(
+                    R.id.bottomSheet
+                ))
 
+            // BottomSheetReviewLayoutBinding.bind()
 
             bottomSheetDialog.setContentView(bottomSheetView)
             bottomSheetDialog.show()
@@ -93,6 +111,11 @@ class ShowDetailsActivity : AppCompatActivity() {
             val submit: Button? = bottomSheetDialog.findViewById<Button>(R.id.submitButton)      // I couldn't find a way to bind the elements from the dialog so I used the old fashioned findViewById way. If you, reader, know how to fix this problem, I would appreciate it.
             val rating: RatingBar? = bottomSheetDialog.findViewById<RatingBar>(R.id.ratingBar)
             val review: TextInputEditText? = bottomSheetDialog.findViewById(R.id.review)
+            val cancel: ImageView? = bottomSheetDialog.findViewById(R.id.dismissBottomSheet)
+
+            cancel!!.setOnClickListener {
+                bottomSheetDialog.dismiss()
+            }
 
             submit?.setOnClickListener {
                 val newReview = Review(review?.text.toString(), username, rating!!.rating.toInt(), R.drawable.ic_profile_placeholder)
@@ -104,7 +127,7 @@ class ShowDetailsActivity : AppCompatActivity() {
                 }
                 updateAverageReview()
                 toggleReviewButtonOff()
-                Toast.makeText(this, "Thanks for your feedback!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Thanks for your feedback!", Toast.LENGTH_SHORT).show()
                 bottomSheetDialog.dismiss()
             }
 
@@ -146,25 +169,26 @@ class ShowDetailsActivity : AppCompatActivity() {
         binding.ratingBar.rating = result.toFloat()
     }
 
-     private fun setupActionBar() {
+    private fun setupActionBar() {
 
-        setSupportActionBar(binding.toolbarShowDetailsActivity)
 
-        val actionBar = supportActionBar
+        (activity as AppCompatActivity).setSupportActionBar(binding.toolbarShowDetailsActivity)    // the cast to AppCompat is necessary to access the setSupportActionBar method
+
+        val actionBar = (activity as AppCompatActivity).supportActionBar
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24)
             actionBar.elevation = 5f   // Adds a divider between action bar and main screen
         }
 
-        binding.toolbarShowDetailsActivity.setNavigationOnClickListener { onBackPressed() }
+        binding.toolbarShowDetailsActivity.setNavigationOnClickListener { activity!!.onBackPressed() }
     }
 
     private fun initReviewsRecyclerView() {
         adapter = ReviewsAdapter(reviewList)
 
-        binding.reviews.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.reviews.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         binding.reviews.adapter = adapter
-        binding.reviews.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        binding.reviews.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
     }
 }

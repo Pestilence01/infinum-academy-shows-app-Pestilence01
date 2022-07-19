@@ -1,37 +1,53 @@
-package com.example.shows_lovre_nincevic_pestilence01
+package com.example.shows_lovre_nincevic_pestilence01.fragments
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.shows_lovre_nincevic_pestilence01.databinding.ActivityShowsBinding
+import com.example.shows_lovre_nincevic_pestilence01.R
+import com.example.shows_lovre_nincevic_pestilence01.adapters.ShowsAdapter
+import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowsBinding
+import com.example.shows_lovre_nincevic_pestilence01.models.Review
+import com.example.shows_lovre_nincevic_pestilence01.models.Show
+import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 
-class ShowsActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityShowsBinding
+class ShowsFragment : Fragment(R.layout.fragment_shows) {
+
+
+    private var _binding: FragmentShowsBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var adapter: ShowsAdapter
     private lateinit var showsList: List<Show>
     private lateinit var username: String
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_shows)
 
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        _binding = FragmentShowsBinding.inflate(inflater,container,false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        username = arguments!!.getString(Constants.LOGIN_EMAIL_KEY).toString()
+
+        activity!!.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         // this line hides the top of the screen (battery life, time, wifi...) allowing the application to take up the entire screen
-
-        if(intent.hasExtra(Constants.LOGIN_EMAIL_KEY)){
-            username = intent.getStringExtra(Constants.LOGIN_EMAIL_KEY)!!
-        }
-
-
-        binding = ActivityShowsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         showsList = loadShows()
 
-        // showsList = listOf()     --> uncomment this line to show EmptyState
+
+       // showsList = ArrayList<Show>(listOf())     --> uncomment this line to show EmptyState
 
         if(showsList.isEmpty()){
             binding.showsRecyclerView.visibility = View.GONE
@@ -42,6 +58,8 @@ class ShowsActivity : AppCompatActivity() {
             initShowsRecyclerView()
         }
     }
+
+
 
     private fun loadShows(): List<Show> {   // Returns hard coded shows
 
@@ -89,14 +107,14 @@ class ShowsActivity : AppCompatActivity() {
             )
             else -> return listOf()
 
-            }
+        }
 
     }
 
     private fun initShowsRecyclerView() {
-        adapter = ShowsAdapter(this, username, showsList)
+        adapter = ShowsAdapter(activity!!, username, showsList)
 
-        binding.showsRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.showsRecyclerView.layoutManager = LinearLayoutManager(activity)
         binding.showsRecyclerView.adapter = adapter
     }
 }

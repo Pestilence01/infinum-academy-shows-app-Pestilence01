@@ -1,4 +1,4 @@
-package com.example.shows_lovre_nincevic_pestilence01
+package com.example.shows_lovre_nincevic_pestilence01.utils
 
 object Constants {
 
