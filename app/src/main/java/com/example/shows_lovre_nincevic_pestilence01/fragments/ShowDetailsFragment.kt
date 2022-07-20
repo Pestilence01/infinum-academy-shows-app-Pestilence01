@@ -1,8 +1,6 @@
 package com.example.shows_lovre_nincevic_pestilence01.fragments
 
-import android.content.Context
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,10 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shows_lovre_nincevic_pestilence01.R
 import com.example.shows_lovre_nincevic_pestilence01.adapters.ReviewsAdapter
-import com.example.shows_lovre_nincevic_pestilence01.databinding.ActivityShowDetailsBinding
-import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentLoginBinding
 import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowDetailsBinding
-import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowsBinding
 import com.example.shows_lovre_nincevic_pestilence01.models.Review
 import com.example.shows_lovre_nincevic_pestilence01.models.Show
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
@@ -58,15 +53,8 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
         reviewList = show.reviews
 
-        if(reviewList.isEmpty()){
-            binding.layoutReviews.visibility = View.GONE
-            binding.noReviews.visibility = View.VISIBLE
-        }
+        adjustUI()
 
-        binding.showTitleActionBar.text = show.title
-        binding.showTitle.text = show.title
-        binding.showDescription.text = show.description
-        binding.showPicture.setImageResource(show.imageResourceID)
 
         updateAverageReview()  // Sets up the review scores and adjusts them when a new review is posted
 
@@ -78,21 +66,13 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
         initReviewsRecyclerView()
 
-        binding.mainScreenScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->      //Changes the ActionBar when scrolled. It looks janky, but I am sure a custom animation could fix it. I will look into this in the future.
-            if(scrollY > 0){
-                (activity as AppCompatActivity).supportActionBar?.elevation = 10f
-                (activity as AppCompatActivity).supportActionBar?.title = ""
-                binding.showTitleActionBar.visibility = View.VISIBLE
-                binding.showTitle.visibility = View.GONE
-            }
-            else{
-                (activity as AppCompatActivity).supportActionBar?.elevation = 0f
-                binding.showTitleActionBar.visibility = View.GONE
-                binding.showTitle.visibility = View.VISIBLE
-            }
+        adjustActionBarToScroll()
 
-        }
+        instantiateBottomSheet()
 
+    }
+
+    private fun instantiateBottomSheet() {
         binding.addReviewButton.setOnClickListener {
             val bottomSheetDialog = BottomSheetDialog(         // Created bottom sheet dialog
                 activity!!, R.style.BottomSheetDialogTheme
@@ -102,8 +82,6 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
                 R.layout.bottom_sheet_review_layout, activity!!.findViewById(
                     R.id.bottomSheet
                 ))
-
-            // BottomSheetReviewLayoutBinding.bind()
 
             bottomSheetDialog.setContentView(bottomSheetView)
             bottomSheetDialog.show()
@@ -133,7 +111,35 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
 
         }
+    }
 
+    private fun adjustUI() {
+        if(reviewList.isEmpty()){
+            binding.layoutReviews.visibility = View.GONE
+            binding.noReviews.visibility = View.VISIBLE
+        }
+
+        binding.showTitleActionBar.text = show.title
+        binding.showTitle.text = show.title
+        binding.showDescription.text = show.description
+        binding.showPicture.setImageResource(show.imageResourceID)
+    }
+
+    private fun adjustActionBarToScroll() {
+        binding.mainScreenScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->      //Changes the ActionBar when scrolled. It looks janky, but I am sure a custom animation could fix it. I will look into this in the future.
+            if(scrollY > 0){
+                (activity as AppCompatActivity).supportActionBar?.elevation = 10f
+                (activity as AppCompatActivity).supportActionBar?.title = ""
+                binding.showTitleActionBar.visibility = View.VISIBLE
+                binding.showTitle.visibility = View.GONE
+            }
+            else{
+                (activity as AppCompatActivity).supportActionBar?.elevation = 0f
+                binding.showTitleActionBar.visibility = View.GONE
+                binding.showTitle.visibility = View.VISIBLE
+            }
+
+        }
     }
 
     private fun checkIfReviewPosted(): Boolean {

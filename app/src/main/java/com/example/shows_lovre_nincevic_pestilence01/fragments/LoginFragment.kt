@@ -48,7 +48,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             if (emailPattern.containsMatchIn(binding.emailLoginText.text.toString())) {
 
                 val username: String = binding.emailLoginText.text!!.split("@")[0]   // Username is the string before "@"
-                findNavController().navigate(R.id.showsFragment, bundleOf(Constants.LOGIN_EMAIL_KEY to username))
+                findNavController().navigate(R.id.action_loginFragment_to_showsFragment, bundleOf(Constants.LOGIN_EMAIL_KEY to username))
                 Toast.makeText(activity, "You have successfully logged in!", Toast.LENGTH_SHORT).show()
             } else {
                 binding.emailLoginText.setError("Please enter a valid email address!!")
