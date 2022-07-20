@@ -57,6 +57,10 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         else{
             initShowsRecyclerView()
         }
+
+        binding.logOut.setOnClickListener {
+            activity!!.onBackPressed()    // This ensures that the screen returns to the login fragment, so it doesn't make a new one.
+        }
     }
 
 

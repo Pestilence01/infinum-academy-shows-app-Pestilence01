@@ -40,7 +40,7 @@ class ShowsAdapter(
             binding.showItemDescription.text = item.description
 
             binding.showCardView.setOnClickListener { view ->
-                view.findNavController().navigate(R.id.showDetailsFragment, bundleOf(Constants.LOGIN_EMAIL_KEY to username, Constants.SHOW_EXTRA_KEY to items[position]))
+                view.findNavController().navigate(R.id.action_showsFragment_to_showDetailsFragment, bundleOf(Constants.LOGIN_EMAIL_KEY to username, Constants.SHOW_EXTRA_KEY to items[position]))
             }
         }
     }
