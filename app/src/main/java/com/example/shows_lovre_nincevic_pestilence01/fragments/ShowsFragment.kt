@@ -127,6 +127,10 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
             val changePhoto: Button? = bottomSheetDialog.findViewById(R.id.changeProfilePhoto)
             val logout: Button? = bottomSheetDialog.findViewById(R.id.logoutButton)
 
+            val emailSharedPreferences = sharedPreferences.getString(Constants.EMAIL_KEY, "JohnDoe@gmail.com")!!
+
+            email!!.text = emailSharedPreferences
+
             if(currentPhoto == null){
                 Glide.with(context!!).load(R.drawable.ic_profile_placeholder).into(photo)
             } else{

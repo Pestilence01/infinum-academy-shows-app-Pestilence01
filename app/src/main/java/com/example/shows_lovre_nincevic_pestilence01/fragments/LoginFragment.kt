@@ -66,6 +66,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 sharedPreferences.edit().apply(){
                     putBoolean(Constants.REMEMBER_ME_KEY, binding.rememberMe.isChecked)
                     putString(Constants.USERNAME_KEY, username)
+                    putString(Constants.EMAIL_KEY, binding.emailLoginText.text.toString())
                 }.apply()
 
                 findNavController().navigate(R.id.action_loginFragment_to_showsFragment)

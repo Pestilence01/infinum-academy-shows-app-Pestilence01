@@ -5,4 +5,5 @@ object Constants {
     const val SHOW_EXTRA_KEY: String = "show_extra_key"
     const val REMEMBER_ME_KEY: String = "remember_me_key"
     const val USERNAME_KEY: String = "username_key"
+    const val EMAIL_KEY: String = "email_key"
 }
