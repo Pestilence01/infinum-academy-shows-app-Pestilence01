@@ -15,15 +15,21 @@
             app:enterAnim="@anim/enter_anim"
             app:exitAnim="@anim/exit_anim"
             app:popEnterAnim="@anim/pop_enter_anim"
-            app:popExitAnim="@anim/pop_exit_anim" />
+            app:popExitAnim="@anim/pop_exit_anim"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
+
     <navigation android:id="@+id/navigation"
-        app:startDestination="@id/showsFragment">
+        app:startDestination="@id/showsFragment"
+        >
         <fragment
             android:id="@+id/showsFragment"
             android:name="com.example.shows_lovre_nincevic_pestilence01.fragments.ShowsFragment"
-            tools:layout="@layout/fragment_shows">
+            tools:layout="@layout/fragment_shows"
+            app:popUpToInclusive="true"
+            >
 
             <action
                 android:id="@+id/action_showsFragment_to_showDetailsFragment"
@@ -32,6 +38,14 @@
                 app:exitAnim="@anim/exit_anim"
                 app:popEnterAnim="@anim/pop_enter_anim"
                 app:popExitAnim="@anim/pop_exit_anim" />
+            <action
+                android:id="@+id/action_showsFragment_to_loginFragment"
+                app:destination="@id/loginFragment"
+                app:enterAnim="@anim/enter_anim"
+                app:exitAnim="@anim/exit_anim"
+                app:popEnterAnim="@anim/pop_enter_anim"
+                app:popExitAnim="@anim/pop_exit_anim"
+                app:popUpTo="@id/navigation" />
         </fragment>
         <fragment
             android:id="@+id/showDetailsFragment"
@@ -39,5 +53,8 @@
             tools:layout="@layout/fragment_show_details">
 
         </fragment>
+
     </navigation>
+
+
 </navigation>

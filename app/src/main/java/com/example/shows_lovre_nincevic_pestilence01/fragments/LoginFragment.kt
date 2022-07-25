@@ -1,6 +1,9 @@
 package com.example.shows_lovre_nincevic_pestilence01.fragments
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -21,14 +24,25 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var username: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val savedBoolean = sharedPreferences.getBoolean(Constants.REMEMBER_ME_KEY, false)
+
+
+        if(savedBoolean){
+            findNavController().navigate(R.id.action_loginFragment_to_showsFragment)
+        }
 
         activity!!.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
@@ -47,8 +61,14 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
             if (emailPattern.containsMatchIn(binding.emailLoginText.text.toString())) {
 
-                val username: String = binding.emailLoginText.text!!.split("@")[0]   // Username is the string before "@"
-                findNavController().navigate(R.id.action_loginFragment_to_showsFragment, bundleOf(Constants.LOGIN_EMAIL_KEY to username))
+                username = binding.emailLoginText.text!!.split("@")[0]   // Username is the string before "@"
+
+                sharedPreferences.edit().apply(){
+                    putBoolean(Constants.REMEMBER_ME_KEY, binding.rememberMe.isChecked)
+                    putString(Constants.USERNAME_KEY, username)
+                }.apply()
+
+                findNavController().navigate(R.id.action_loginFragment_to_showsFragment)
                 Toast.makeText(activity, "You have successfully logged in!", Toast.LENGTH_SHORT).show()
             } else {
                 binding.emailLoginText.setError("Please enter a valid email address!!")

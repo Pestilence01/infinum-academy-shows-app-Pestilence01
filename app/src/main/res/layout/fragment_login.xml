@@ -142,6 +142,19 @@
                 app:boxStrokeColor="@color/white" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <CheckBox
+            android:id="@+id/rememberMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/passwordLogin"
+            android:layout_marginStart="@dimen/spacing_2x"
+            android:layout_marginTop="@dimen/spacing_1x"
+            android:text="@string/remember_me"
+            android:buttonTint="@color/white"
+            android:textSize="@dimen/spacing_text_2x"
+            android:textColor="@color/white"/>
+
 
         <!-- for this button I had to add the TopToBottomOf constraint because if I put BottomToBottomOf it would mess up the Scroll view -->
         <androidx.appcompat.widget.AppCompatButton

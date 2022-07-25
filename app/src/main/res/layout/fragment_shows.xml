@@ -19,15 +19,15 @@
         android:layout_marginStart="@dimen/spacing_3x"
         android:layout_marginTop="@dimen/spacing_4x"/>
 
-    <ImageView
-        android:id="@+id/logOut"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/editProfile"
         android:layout_width="@dimen/spacing_4x"
         android:layout_height="@dimen/spacing_4x"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
-        android:src="@drawable/ic_baseline_log_out_24"/>
+        android:src="@drawable/ic_profile_placeholder"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/showsRecyclerView"
