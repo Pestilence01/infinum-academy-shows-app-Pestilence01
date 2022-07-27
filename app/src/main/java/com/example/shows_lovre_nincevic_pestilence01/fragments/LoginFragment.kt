@@ -45,6 +45,22 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     }
 
+    override fun onResume() { //checks if the user just registered
+        super.onResume()
+        val justRegistered = sharedPreferences.getBoolean(Constants.REGISTERED_KEY, false)
+        if(justRegistered){
+            binding.registerButton.visibility = View.GONE
+            binding.login.text = "Registration \nsuccessful!"
+        } else {
+            binding.registerButton.visibility = View.VISIBLE
+            binding.login.text = "Login"
+        }
+
+        sharedPreferences.edit().apply(){
+            putBoolean(Constants.REGISTERED_KEY, false)
+        }.apply()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

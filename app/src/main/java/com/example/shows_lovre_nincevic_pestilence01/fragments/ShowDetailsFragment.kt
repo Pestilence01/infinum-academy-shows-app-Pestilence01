@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.shows_lovre_nincevic_pestilence01.R
+import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
 import com.example.shows_lovre_nincevic_pestilence01.adapters.ReviewsAdapter
 import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
 import com.example.shows_lovre_nincevic_pestilence01.api.requests.PostReviewRequest
@@ -48,6 +49,7 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var adapter: ReviewsAdapter
     private lateinit var username: String
+    private lateinit var parentActivity: MainActivity
 
 
 
@@ -62,12 +64,14 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        parentActivity = (activity!! as MainActivity)
+
         setupActionBar()  // Sets up the action bar
 
         sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
         username = sharedPreferences.getString(Constants.USERNAME_KEY, "John Doe").toString()
 
-        viewModel.setParameters(requireContext(), arguments!!.get(Constants.SHOW_EXTRA_KEY).toString())
+        viewModel.setParameters(requireContext(), arguments!!.get(Constants.SHOW_EXTRA_KEY).toString(), parentActivity)
 
         viewModel.showLiveData.observe(viewLifecycleOwner){
             setupShowUI()
@@ -87,6 +91,12 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
         Glide.with(requireContext()).load(viewModel.showLiveData.value!!.image_url).into(binding.showPicture)
         binding.showDescription.text = viewModel.showLiveData.value!!.description
         checkReviewAmount()
+        setupRatingDetails()
+    }
+
+    private fun setupRatingDetails() {
+        binding.averageReview.text = "${viewModel.showLiveData.value!!.no_of_reviews} REVIEWS, ${viewModel.showLiveData.value!!.average_rating} AVERAGE"
+        binding.ratingBar.rating = viewModel.showLiveData.value!!.average_rating!!.toFloat()
     }
 
     private fun checkReviewAmount() {
@@ -131,13 +141,15 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
                     bitmap = null
                 }
 
-                val request: PostReviewRequest = PostReviewRequest("1", "Bad", viewModel.showLiveData.value!!.id)
+                val request: PostReviewRequest = PostReviewRequest(rating!!.rating.toDouble().toInt().toString(), review!!.text.toString(), viewModel.showLiveData.value!!.id)
 
                 sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
 
                 val accessToken = sharedPreferences.getString("accessToken", "empty")
                 val client = sharedPreferences.getString("client", "empty")
                 val uid = sharedPreferences.getString("uid", "empty")
+
+                parentActivity.showProgressDialog("Please wait")
 
                 ApiModule.initRetrofit(requireContext())
 
@@ -149,10 +161,12 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
                         } else {
                             Log.i("IS SUCCESSFUL", " NO")
                         }
+                        parentActivity.hideProgressDialog()
                     }
 
                     override fun onFailure(call: Call<PostReviewResponse>, t: Throwable) {
                         Log.i("FAILURE", " YES")
+                        parentActivity.hideProgressDialog()
                     }
 
 

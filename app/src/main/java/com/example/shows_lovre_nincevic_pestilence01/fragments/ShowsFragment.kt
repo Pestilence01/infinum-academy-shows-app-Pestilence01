@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -22,6 +23,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.shows_lovre_nincevic_pestilence01.R
+import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
 import com.example.shows_lovre_nincevic_pestilence01.adapters.ShowsAdapter
 import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.CurrentUserResponse
@@ -66,6 +68,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var adapter: ShowsAdapter
     private lateinit var username: String
+    private lateinit var parentActivity: MainActivity
 
 
     override fun onCreateView(
@@ -80,11 +83,14 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.setContext(requireContext())
+        parentActivity = (activity!! as MainActivity)
+
+        viewModel.setContext(requireContext(), parentActivity)
 
         sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
 
         username = sharedPreferences.getString(Constants.USERNAME_KEY, "John Doe")!!
+
 
         val currentPhoto = getCurrentProfilePhoto()
 
@@ -109,7 +115,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         }
 
         viewModel.currentUserLiveData.observe(viewLifecycleOwner){
-
+                // set up the observer
         }
 
 
@@ -240,7 +246,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
             if(requestCode == CAMERA_REQUEST_CODE){
                 val picture: Bitmap = data!!.extras!!.get("data") as Bitmap
                 val imageSaver = ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images").save(picture)
-                updateProfilePicture()
+            //  updateProfilePicture()
                 Glide.with(context!!).load(picture).into(photo)
                 Glide.with(context!!).load(picture).into(binding.editProfile)
             }
@@ -249,7 +255,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
                 val source = ImageDecoder.createSource(activity!!.contentResolver, pickedPhoto!!)
                 val bitmap = ImageDecoder.decodeBitmap(source)
                 val imageSaver = ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images").save(bitmap)
-                updateProfilePicture()
+         //     updateProfilePicture()
                 Glide.with(context!!).load(pickedPhoto).into(photo)
                 Glide.with(context!!).load(pickedPhoto).into(binding.editProfile)
             }

@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
+import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
 import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.CurrentShowResponse
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.ReviewsResponse
@@ -30,16 +31,18 @@ class ShowDetailsViewModel: ViewModel() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var context: Context
-    private lateinit var binding: FragmentShowDetailsBinding
 
 
-    fun setParameters(context: Context, id: String){
+    fun setParameters(context: Context, id: String, parentActivity: MainActivity){
         this.context = context
+        parentActivity.showProgressDialog("Please wait")
         getShow(id)
+        parentActivity.hideProgressDialog()
     }
 
     fun getReviews(id: String) {
         sharedPreferences = context.getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+
 
         val accessToken = sharedPreferences.getString("accessToken", "empty")
         val client = sharedPreferences.getString("client", "empty")

@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
 import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.CurrentUserResponse
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.ShowsResponse
@@ -29,10 +30,12 @@ class ShowsViewModel: ViewModel() {
     private lateinit var sharedPreferences: SharedPreferences
 
 
-    fun setContext(context: Context){
+    fun setContext(context: Context, parentActivity: MainActivity){
         this.context = context
+        parentActivity.showProgressDialog("Please wait")
         loadShows()
         loadCurrentUser()
+        parentActivity.hideProgressDialog()
     }
 
     private fun loadCurrentUser() {
@@ -50,12 +53,12 @@ class ShowsViewModel: ViewModel() {
                 if(response.isSuccessful){
                     _currentUserLiveData.value = response.body()!!.user
                 } else {
-                    Log.i("IS SUCCESSFUL", " NO")
+
                 }
             }
 
             override fun onFailure(call: Call<CurrentUserResponse>, t: Throwable) {
-                Log.i("FAILURE", " YES")
+
             }
 
 
@@ -78,12 +81,12 @@ class ShowsViewModel: ViewModel() {
                 if(response.isSuccessful){
                     _showsListLiveData.value = response.body()!!.shows.asList()
                 } else {
-                    Log.i("IS SUCCESSFUL", " NO")
+
                 }
             }
 
             override fun onFailure(call: Call<ShowsResponse>, t: Throwable) {
-                Log.i("FAILURE", " YES")
+
             }
 
 
