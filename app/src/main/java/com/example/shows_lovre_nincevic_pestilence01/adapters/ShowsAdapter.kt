@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.shows_lovre_nincevic_pestilence01.R
 import com.example.shows_lovre_nincevic_pestilence01.databinding.ShowItemBinding
 import com.example.shows_lovre_nincevic_pestilence01.models.Show
@@ -35,12 +36,12 @@ class ShowsAdapter(
     inner class ShowViewHolder(private val binding: ShowItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Show){
-            binding.showItemImage.setImageResource(item.imageResourceID)
+            Glide.with(context).load(item.image_url).into(binding.showItemImage)
             binding.showItemTitle.text = item.title
             binding.showItemDescription.text = item.description
 
             binding.showCardView.setOnClickListener { view ->
-                view.findNavController().navigate(R.id.action_showsFragment_to_showDetailsFragment, bundleOf(Constants.SHOW_EXTRA_KEY to items[position]))
+                view.findNavController().navigate(R.id.action_showsFragment_to_showDetailsFragment, bundleOf(Constants.SHOW_EXTRA_KEY to item.id))
             }
         }
     }

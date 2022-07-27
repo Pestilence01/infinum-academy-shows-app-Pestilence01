@@ -63,7 +63,7 @@
                     android:id="@+id/showPicture"
                     android:layout_width="wrap_content"
                     android:layout_height="350dp"
-                    android:scaleType="fitXY"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/the_office" />
 
             </androidx.cardview.widget.CardView>

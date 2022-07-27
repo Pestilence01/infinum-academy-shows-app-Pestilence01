@@ -4,11 +4,14 @@ import android.graphics.Bitmap
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class Review(
-    val comment: String,
-    val username: String,
-    val rating: Int,
-    @DrawableRes val profileImageBitmap: Bitmap?,
-) : Parcelable
+    @SerialName("id") val id: String,
+    @SerialName("comment") val comment: String,
+    @SerialName("rating") val rating: String,
+    @SerialName("show_id") val show_id: String,
+    @SerialName("user") val user: User
+)

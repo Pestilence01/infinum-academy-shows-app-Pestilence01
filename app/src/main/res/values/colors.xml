@@ -15,5 +15,8 @@
 
     <color name="button_disabled_text_color_login">#CCFFFFFF</color>
 
+    <color name="colorSnackBarSuccess">#41f294</color>
+    <color name="colorSnackBarError">#F72400</color>
+
 
 </resources>

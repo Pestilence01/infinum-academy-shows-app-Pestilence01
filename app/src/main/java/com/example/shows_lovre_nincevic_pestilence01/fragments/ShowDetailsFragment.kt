@@ -3,8 +3,8 @@ package com.example.shows_lovre_nincevic_pestilence01.fragments
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,16 +17,24 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.shows_lovre_nincevic_pestilence01.R
 import com.example.shows_lovre_nincevic_pestilence01.adapters.ReviewsAdapter
+import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
+import com.example.shows_lovre_nincevic_pestilence01.api.requests.PostReviewRequest
+import com.example.shows_lovre_nincevic_pestilence01.api.responses.CurrentShowResponse
+import com.example.shows_lovre_nincevic_pestilence01.api.responses.PostReviewResponse
 import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowDetailsBinding
 import com.example.shows_lovre_nincevic_pestilence01.models.Review
-import com.example.shows_lovre_nincevic_pestilence01.models.Show
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 import com.example.shows_lovre_nincevic_pestilence01.utils.ImageSaver
 import com.example.shows_lovre_nincevic_pestilence01.viewmodels.ShowDetailsViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
+import okhttp3.internal.notify
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.lang.Exception
 
 
@@ -59,32 +67,40 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
         sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
         username = sharedPreferences.getString(Constants.USERNAME_KEY, "John Doe").toString()
 
-        viewModel.setShow(arguments!!.get(Constants.SHOW_EXTRA_KEY) as Show)
+        viewModel.setParameters(requireContext(), arguments!!.get(Constants.SHOW_EXTRA_KEY).toString())
 
         viewModel.showLiveData.observe(viewLifecycleOwner){
-            adjustUI(it.reviews)
-
-            if(viewModel.checkIfReviewPosted(username)){
-                toggleReviewButtonOff()
-            }
-
-
-            val averageReview = viewModel.calculateAverageReview()
-            updateRatingUI(averageReview, it.reviews.size)
-
-            initReviewsRecyclerView(it.reviews)
-            adjustActionBarToScroll()
-            instantiateBottomSheet(it.reviews)
+            setupShowUI()
+        }
+        viewModel.getReviews(arguments!!.get(Constants.SHOW_EXTRA_KEY).toString())
+        viewModel.reviewsLiveData.observe(viewLifecycleOwner){
+            initReviewsRecyclerView()
+            instantiateBottomSheet()
         }
 
+
     }
 
-    private fun updateRatingUI(result: String, amountOfReviews: Int) {
-        binding.averageReview.text = "$amountOfReviews REVIEWS, $result AVERAGE"
-        binding.ratingBar.rating = result.toFloat()
+    private fun setupShowUI() {
+        binding.showTitleActionBar.text = viewModel.showLiveData.value!!.title
+        binding.showTitle.text = viewModel.showLiveData.value!!.title
+        Glide.with(requireContext()).load(viewModel.showLiveData.value!!.image_url).into(binding.showPicture)
+        binding.showDescription.text = viewModel.showLiveData.value!!.description
+        checkReviewAmount()
     }
 
-    private fun instantiateBottomSheet(reviewList: ArrayList<Review>) {
+    private fun checkReviewAmount() {
+        if(viewModel.showLiveData.value!!.no_of_reviews == "0"){
+            binding.layoutReviews.visibility = View.GONE
+            binding.noReviews.visibility = View.VISIBLE
+        } else {
+            binding.layoutReviews.visibility = View.VISIBLE
+            binding.noReviews.visibility = View.GONE
+        }
+    }
+
+
+    private fun instantiateBottomSheet() {
         binding.addReviewButton.setOnClickListener {
             val bottomSheetDialog = BottomSheetDialog(         // Created bottom sheet dialog
                 activity!!, R.style.BottomSheetDialogTheme
@@ -114,16 +130,38 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
                 } catch (e: Exception){
                     bitmap = null
                 }
-                val newReview = Review(review?.text.toString(), username, rating!!.rating.toInt(), bitmap)
-                reviewList.add(newReview)
-                adapter.notifyItemInserted(reviewList.size - 1)
-                if(reviewList.size == 1){   // If this is the first review, it adjusts the UI
-                    binding.layoutReviews.visibility = View.VISIBLE
-                    binding.noReviews.visibility = View.GONE
-                }
-                val averageReview = viewModel.calculateAverageReview()
-                updateRatingUI(averageReview, reviewList.size)
-                toggleReviewButtonOff()
+
+                val request: PostReviewRequest = PostReviewRequest("1", "Bad", viewModel.showLiveData.value!!.id)
+
+                sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+
+                val accessToken = sharedPreferences.getString("accessToken", "empty")
+                val client = sharedPreferences.getString("client", "empty")
+                val uid = sharedPreferences.getString("uid", "empty")
+
+                ApiModule.initRetrofit(requireContext())
+
+                ApiModule.retrofit.postReviews(accessToken!!, client!!, uid!!, request).enqueue(object :
+                    Callback<PostReviewResponse> {
+                    override fun onResponse(call: Call<PostReviewResponse>, response: Response<PostReviewResponse>) {
+                        if(response.isSuccessful){
+                            Log.i("IS SUCCESSFUL POST REVIEW", " YES")
+                        } else {
+                            Log.i("IS SUCCESSFUL", " NO")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<PostReviewResponse>, t: Throwable) {
+                        Log.i("FAILURE", " YES")
+                    }
+
+
+                })
+
+                adapter.notifyDataSetChanged()
+
+
+                //toggleReviewButtonOff()
                 Toast.makeText(activity, "Thanks for your feedback!", Toast.LENGTH_SHORT).show()
                 bottomSheetDialog.dismiss()
             }
@@ -141,10 +179,8 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
             binding.noReviews.visibility = View.GONE
         }
 
-        binding.showTitleActionBar.text = viewModel.showLiveData.value!!.title
-        binding.showTitle.text = viewModel.showLiveData.value!!.title
-        binding.showDescription.text = viewModel.showLiveData.value!!.description
-        binding.showPicture.setImageResource(viewModel.showLiveData.value!!.imageResourceID)
+
+   //     binding.showPicture.setImageResource(viewModel.showLiveData.value!!.imageResourceID)
 
     }
 
@@ -188,8 +224,10 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
         binding.toolbarShowDetailsActivity.setNavigationOnClickListener { activity!!.onBackPressed() }
     }
 
-    private fun initReviewsRecyclerView(reviewList: ArrayList<Review>) {
-        adapter = ReviewsAdapter(reviewList, context!!)
+    private fun initReviewsRecyclerView() {
+        adapter = ReviewsAdapter(viewModel.reviewsLiveData.value!!, context!!)
+
+        binding.layoutReviews.visibility = View.VISIBLE
 
         binding.reviews.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         binding.reviews.adapter = adapter

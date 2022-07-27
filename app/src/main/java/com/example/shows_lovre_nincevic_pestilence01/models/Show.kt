@@ -1,14 +1,14 @@
 package com.example.shows_lovre_nincevic_pestilence01.models
 
-import android.os.Parcelable
-import androidx.annotation.DrawableRes
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class Show(
-    val ID: String,
-    val title: String,
-    val description: String,
-    @DrawableRes val imageResourceID: Int,
-    val reviews: ArrayList<Review>
-) : Parcelable
+    @SerialName("id") val id: String,
+    @SerialName("average_rating") val average_rating: String?,
+    @SerialName("description") val description: String?,
+    @SerialName("image_url") val image_url: String,
+    @SerialName("no_of_reviews") val no_of_reviews: String,
+    @SerialName("title") val title: String
+)

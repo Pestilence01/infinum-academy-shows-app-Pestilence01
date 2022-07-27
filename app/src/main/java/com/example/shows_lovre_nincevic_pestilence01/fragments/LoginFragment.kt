@@ -14,9 +14,18 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
 import com.example.shows_lovre_nincevic_pestilence01.R
+import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
+import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
+import com.example.shows_lovre_nincevic_pestilence01.api.requests.LoginRequest
+import com.example.shows_lovre_nincevic_pestilence01.api.requests.RegisterRequest
+import com.example.shows_lovre_nincevic_pestilence01.api.responses.LoginResponse
+import com.example.shows_lovre_nincevic_pestilence01.api.responses.RegisterResponse
 import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentLoginBinding
+import com.example.shows_lovre_nincevic_pestilence01.models.User
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
-
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
@@ -27,6 +36,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var username: String
 
+    private lateinit var parentActivity: MainActivity
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,6 +47,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        parentActivity = (activity!! as MainActivity)
+
+        ApiModule.initRetrofit(requireContext())
 
         val savedBoolean = sharedPreferences.getBoolean(Constants.REMEMBER_ME_KEY, false)
 
@@ -53,6 +68,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         binding.passwordLoginText.doOnTextChanged { _, _, _, _ ->
             toggleButtonEnabled()
         }
+
+        binding.registerButton.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        }
+
         binding.loginButton.setOnClickListener {
 
 
@@ -69,8 +89,46 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     putString(Constants.EMAIL_KEY, binding.emailLoginText.text.toString())
                 }.apply()
 
-                findNavController().navigate(R.id.action_loginFragment_to_showsFragment)
-                Toast.makeText(activity, "You have successfully logged in!", Toast.LENGTH_SHORT).show()
+                parentActivity.showProgressDialog("Please wait")
+
+                val loginRequest = LoginRequest(
+                    email = binding.emailLoginText.text.toString(),
+                    password = binding.passwordLoginText.text.toString()
+                )
+                ApiModule.retrofit.loginUser(loginRequest).enqueue(object :
+                    Callback<LoginResponse> {
+                    override fun onResponse(
+                        call: Call<LoginResponse>,
+                        response: Response<LoginResponse>
+                    ) {
+                        if(response.isSuccessful){
+                            val accessToken = response.headers().get("access-token")
+                            val client = response.headers().get("client")
+                            val uid = response.headers().get("uid")
+
+                            sharedPreferences.edit().apply(){
+                                putString("accessToken", accessToken)
+                                putString("client", client)
+                                putString("uid", uid)
+                            }.apply()
+
+                            findNavController().navigate(R.id.action_loginFragment_to_showsFragment)
+                            parentActivity.showErrorSnackBar("You have successfully logged in!", false)
+                        }
+                        else{
+                            parentActivity.showErrorSnackBar("Please provide valid credentials", true)
+                        }
+                        parentActivity.hideProgressDialog()
+                    }
+
+                    override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                        parentActivity.showErrorSnackBar("Something went wrong!", true)
+                        parentActivity.hideProgressDialog()
+                    }
+
+
+                })
+
             } else {
                 binding.emailLoginText.setError("Please enter a valid email address!!")
             }

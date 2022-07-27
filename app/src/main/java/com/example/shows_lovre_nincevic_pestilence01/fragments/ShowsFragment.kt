@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,14 +23,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.shows_lovre_nincevic_pestilence01.R
 import com.example.shows_lovre_nincevic_pestilence01.adapters.ShowsAdapter
+import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
+import com.example.shows_lovre_nincevic_pestilence01.api.responses.CurrentUserResponse
+import com.example.shows_lovre_nincevic_pestilence01.api.responses.PostReviewResponse
+import com.example.shows_lovre_nincevic_pestilence01.api.responses.ShowsResponse
+import com.example.shows_lovre_nincevic_pestilence01.api.responses.UpdateProfilePhotoResponse
 import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowsBinding
 import com.example.shows_lovre_nincevic_pestilence01.models.Show
+import com.example.shows_lovre_nincevic_pestilence01.models.User
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 import com.example.shows_lovre_nincevic_pestilence01.utils.ImageSaver
 import com.example.shows_lovre_nincevic_pestilence01.viewmodels.ShowsViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.hdodenhof.circleimageview.CircleImageView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.lang.Exception
 
 
@@ -58,7 +68,6 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
     private lateinit var username: String
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -71,6 +80,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.setContext(requireContext())
 
         sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
 
@@ -96,6 +106,10 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
             else{
                 initShowsRecyclerView(it)
             }
+        }
+
+        viewModel.currentUserLiveData.observe(viewLifecycleOwner){
+
         }
 
 
@@ -226,6 +240,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
             if(requestCode == CAMERA_REQUEST_CODE){
                 val picture: Bitmap = data!!.extras!!.get("data") as Bitmap
                 val imageSaver = ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images").save(picture)
+                updateProfilePicture()
                 Glide.with(context!!).load(picture).into(photo)
                 Glide.with(context!!).load(picture).into(binding.editProfile)
             }
@@ -234,10 +249,38 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
                 val source = ImageDecoder.createSource(activity!!.contentResolver, pickedPhoto!!)
                 val bitmap = ImageDecoder.decodeBitmap(source)
                 val imageSaver = ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images").save(bitmap)
+                updateProfilePicture()
                 Glide.with(context!!).load(pickedPhoto).into(photo)
                 Glide.with(context!!).load(pickedPhoto).into(binding.editProfile)
             }
         }
+    }
+
+    private fun updateProfilePicture() {
+        sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+
+        val accessToken = sharedPreferences.getString("accessToken", "empty")
+        val client = sharedPreferences.getString("client", "empty")
+        val uid = sharedPreferences.getString("uid", "empty")
+
+        ApiModule.initRetrofitAws(requireContext(), Constants.AWS_URL)
+
+        ApiModule.retrofit.updateProfilePhoto(accessToken!!, client!!, uid!!, "/images/${username}.png").enqueue(object :
+            Callback<UpdateProfilePhotoResponse> {
+            override fun onResponse(call: Call<UpdateProfilePhotoResponse>, response: Response<UpdateProfilePhotoResponse>) {
+                if(response.isSuccessful){
+                    Log.i("IS SUCCESSFUL UPDATE PHOTO", " YES")
+                } else {
+                    Log.i("IS SUCCESSFUL", " NO")
+                }
+            }
+
+            override fun onFailure(call: Call<UpdateProfilePhotoResponse>, t: Throwable) {
+                Log.i("FAILURE", " YES")
+            }
+
+
+        })
     }
 
     private fun getCurrentProfilePhoto(): Bitmap?{  //returns the current profile photo or null (in that case the default placeholder is used)

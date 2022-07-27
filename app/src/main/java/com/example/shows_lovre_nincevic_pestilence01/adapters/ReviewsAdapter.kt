@@ -10,7 +10,7 @@ import com.example.shows_lovre_nincevic_pestilence01.databinding.ReviewItemBindi
 import com.example.shows_lovre_nincevic_pestilence01.models.Review
 
 class ReviewsAdapter(
-    private var items: ArrayList<Review>,
+    private var items: List<Review>,
     private var context: Context
 ) : RecyclerView.Adapter<ReviewsAdapter.ReviewViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewViewHolder {
@@ -29,14 +29,15 @@ class ReviewsAdapter(
     inner class ReviewViewHolder(private val binding: ReviewItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Review){
-            if(item.profileImageBitmap == null) {
+            if(item.user.image_url == null){
                 Glide.with(context).load(R.drawable.ic_profile_placeholder).into(binding.profileCircularImage)
-            } else {
-                Glide.with(context).load(item.profileImageBitmap).into(binding.profileCircularImage)
             }
-            binding.username.text = item.username
+            else {
+                Glide.with(context).load(item.user.image_url).into(binding.profileCircularImage)
+            }
+            binding.username.text = item.user.email.toString().split("@")[0]
             binding.comment.text = item.comment
-            binding.score.text = item.rating.toString()
+            binding.score.text = item.rating
         }
     }
 }
