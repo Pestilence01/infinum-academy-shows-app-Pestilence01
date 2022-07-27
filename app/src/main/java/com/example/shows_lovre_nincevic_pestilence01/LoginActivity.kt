@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import com.example.shows_lovre_nincevic_pestilence01.databinding.ActivityLoginBinding
 
-
 class LoginActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityLoginBinding
@@ -40,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
             val emailPattern: Regex =
                 Regex(".+@.+[.].*") // pattern ensures that there is at least one character before "@" and at least one character after "@", the "@" is always present. Updated to account for the domain
 
-            if(emailPattern.containsMatchIn(binding.ETEmailLogin.text.toString())) {
+            if (emailPattern.containsMatchIn(binding.emailLoginText.text.toString())) {
                 val intent: Intent = Intent(this, ShowsActivity::class.java)
                 intent.putExtra(Constants.LOGIN_EMAIL_KEY, binding.emailLoginText.text.toString())
                 startActivity(intent)
@@ -54,14 +53,7 @@ class LoginActivity : AppCompatActivity() {
 
     //This function checks whether the email is blank and if the password field has less than 6 characters. If that is the case, the button will be disabled
     private fun toggleButtonEnabled() {
-
-            .isBlank() || binding.ETPasswordLogin.text.toString().length < 6
-        if (binding.emailLoginText.text.toString()
-                .isBlank() || binding.ETPasswordLogin.text.toString().length < 6
-        )
-            binding.loginButton.setEnabled(false)
-        else binding.loginButton.setEnabled(true)
+        binding.loginButton.isEnabled =
+            !(binding.emailLoginText.text.toString().isBlank() || binding.ETPasswordLogin.text.toString().length < 6)
     }
-
-
 }
