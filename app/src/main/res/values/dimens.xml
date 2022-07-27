@@ -1,53 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="IV_triangle_login_margin_start">56dp</dimen>
-    <dimen name="IV_triangle_login_margin_top">181dp</dimen>
-
-    <dimen name="TV_shows_margin_start">16dp</dimen>
-    <dimen name="TV_shows_margin_top">178dp</dimen>
-    <dimen name="TV_shows_text_size">34sp</dimen>
-
-    <dimen name="TIL_password_login_margin_top">16dp</dimen>
-    <dimen name="TIL_password_login_margin_end">23dp</dimen>
-    <dimen name="TIL_password_login_margin_start">23dp</dimen>
-
-    <dimen name="ET_password_login_text_size">16sp</dimen>
-
-    <dimen name="TIL_email_login_margin_top">16dp</dimen>
-    <dimen name="TIL_email_login_margin_end">23dp</dimen>
-    <dimen name="TIL_email_login_margin_start">23dp</dimen>
-
-    <dimen name="ET_email_login_text_size">16sp</dimen>
-
-    <dimen name="ET_please_login_margin_top">25dp</dimen>
-    <dimen name="ET_please_login_margin_start">23dp</dimen>
-    <dimen name="ET_please_login_text_size">17sp</dimen>
-
-    <dimen name="ET_login_text_size">36sp</dimen>
-    <dimen name="ET_login_margin_top">80dp</dimen>
-    <dimen name="ET_login_margin_start">23dp</dimen>
-
-    <dimen name="button_login_margin_start">24dp</dimen>
-    <dimen name="button_login_margin_end">24dp</dimen>
-    <dimen name="button_login_margin_top">100dp</dimen>
-    <dimen name="button_login_text_size">17sp</dimen>
-
-    <dimen name="TV_welcome_screen_email_text_size">17sp</dimen>
-    <dimen name="TV_welcome_screen_email_margin_top">31dp</dimen>
-
     <dimen name="spacing_1x">8dp</dimen>
     <dimen name="spacing_2x">16dp</dimen>
     <dimen name="spacing_3x">24dp</dimen>
     <dimen name="spacing_4x">32dp</dimen>
     <dimen name="spacing_5x">40dp</dimen>
+    <dimen name="spacing_22x">176dp</dimen>
+    <dimen name="spacing_10x">80dp</dimen>
+    <dimen name="spacing_13x">104dp</dimen>
 
     <dimen name="spacing_text_1x">8sp</dimen>
     <dimen name="spacing_text_2x">16sp</dimen>
     <dimen name="spacing_text_3x">24sp</dimen>
     <dimen name="spacing_text_4x">32sp</dimen>
     <dimen name="spacing_text_5x">40sp</dimen>
-
-
 
 </resources>
