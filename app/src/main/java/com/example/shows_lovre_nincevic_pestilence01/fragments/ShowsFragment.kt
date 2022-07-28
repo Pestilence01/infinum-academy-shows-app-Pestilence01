@@ -85,6 +85,8 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
         parentActivity = (activity!! as MainActivity)
 
+        parentActivity.showProgressDialog()
+
         viewModel.setContext(requireContext(), parentActivity)
 
         sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
@@ -107,12 +109,15 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
             if(it.isEmpty()){
                 binding.showsRecyclerView.visibility = View.GONE
                 binding.constraintLayoutEmptyState.visibility = View.VISIBLE
+                parentActivity.hideProgressDialog()
             }
 
             else{
                 initShowsRecyclerView(it)
+                parentActivity.hideProgressDialog()
             }
         }
+
 
         viewModel.currentUserLiveData.observe(viewLifecycleOwner){
                 // set up the observer
@@ -262,7 +267,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         }
     }
 
-    private fun updateProfilePicture() {
+    private fun updateProfilePicture() {    // unsuccessful attempt to update the profile photo on AWS :)
         sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
 
         val accessToken = sharedPreferences.getString("accessToken", "empty")
@@ -302,7 +307,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
 
     private fun initShowsRecyclerView(list: List<Show>) {
-        adapter = ShowsAdapter(activity!!, username, list)
+        adapter = ShowsAdapter(activity!!, list)
 
         binding.showsRecyclerView.layoutManager = LinearLayoutManager(activity)
         binding.showsRecyclerView.adapter = adapter

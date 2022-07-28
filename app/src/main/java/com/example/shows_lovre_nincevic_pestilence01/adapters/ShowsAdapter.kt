@@ -14,7 +14,6 @@ import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 
 class ShowsAdapter(
     private var context: Context,
-    private var username: String,
     private var items: List<Show>,
 ) : RecyclerView.Adapter<ShowsAdapter.ShowViewHolder>() {
 

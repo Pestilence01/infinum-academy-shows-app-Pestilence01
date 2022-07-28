@@ -2,15 +2,9 @@ package com.example.shows_lovre_nincevic_pestilence01.activities
 
 
 import android.app.Dialog
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.navigation.Navigation
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import com.example.shows_lovre_nincevic_pestilence01.R
 import com.example.shows_lovre_nincevic_pestilence01.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
@@ -29,7 +23,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         }
 
-    fun showProgressDialog(text: String) {
+    fun showProgressDialog() {
         mProgressDialog = Dialog(this)
 
         mProgressDialog.setContentView(R.layout.dialog_progress)

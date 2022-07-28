@@ -2,9 +2,7 @@ package com.example.shows_lovre_nincevic_pestilence01.fragments
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,20 +21,15 @@ import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
 import com.example.shows_lovre_nincevic_pestilence01.adapters.ReviewsAdapter
 import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
 import com.example.shows_lovre_nincevic_pestilence01.api.requests.PostReviewRequest
-import com.example.shows_lovre_nincevic_pestilence01.api.responses.CurrentShowResponse
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.PostReviewResponse
 import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowDetailsBinding
-import com.example.shows_lovre_nincevic_pestilence01.models.Review
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
-import com.example.shows_lovre_nincevic_pestilence01.utils.ImageSaver
 import com.example.shows_lovre_nincevic_pestilence01.viewmodels.ShowDetailsViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
-import okhttp3.internal.notify
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.Exception
 
 
 class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
@@ -68,6 +61,8 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
         setupActionBar()  // Sets up the action bar
 
+        parentActivity.showProgressDialog()
+
         sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
         username = sharedPreferences.getString(Constants.USERNAME_KEY, "John Doe").toString()
 
@@ -80,6 +75,7 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
         viewModel.reviewsLiveData.observe(viewLifecycleOwner){
             initReviewsRecyclerView()
             instantiateBottomSheet()
+            parentActivity.hideProgressDialog()
         }
 
 
@@ -110,6 +106,8 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     }
 
 
+
+
     private fun instantiateBottomSheet() {
         binding.addReviewButton.setOnClickListener {
             val bottomSheetDialog = BottomSheetDialog(         // Created bottom sheet dialog
@@ -134,48 +132,12 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
             }
 
             submit?.setOnClickListener {
-                var bitmap: Bitmap?
-                try{
-                    bitmap = ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images").load()!!
-                } catch (e: Exception){
-                    bitmap = null
-                }
 
-                val request: PostReviewRequest = PostReviewRequest(rating!!.rating.toDouble().toInt().toString(), review!!.text.toString(), viewModel.showLiveData.value!!.id)
-
-                sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
-
-                val accessToken = sharedPreferences.getString("accessToken", "empty")
-                val client = sharedPreferences.getString("client", "empty")
-                val uid = sharedPreferences.getString("uid", "empty")
-
-                parentActivity.showProgressDialog("Please wait")
-
-                ApiModule.initRetrofit(requireContext())
-
-                ApiModule.retrofit.postReviews(accessToken!!, client!!, uid!!, request).enqueue(object :
-                    Callback<PostReviewResponse> {
-                    override fun onResponse(call: Call<PostReviewResponse>, response: Response<PostReviewResponse>) {
-                        if(response.isSuccessful){
-                            Log.i("IS SUCCESSFUL POST REVIEW", " YES")
-                        } else {
-                            Log.i("IS SUCCESSFUL", " NO")
-                        }
-                        parentActivity.hideProgressDialog()
-                    }
-
-                    override fun onFailure(call: Call<PostReviewResponse>, t: Throwable) {
-                        Log.i("FAILURE", " YES")
-                        parentActivity.hideProgressDialog()
-                    }
+                parentActivity.showProgressDialog()
+                postReview(rating, review)
+                adapter.notifyDataSetChanged()  // I do not know how to make it update in real-time. It doesn't post the review but if I leave the fragment and come back to it, it's there. Any tips on how to update it in real-time?
 
 
-                })
-
-                adapter.notifyDataSetChanged()
-
-
-                //toggleReviewButtonOff()
                 Toast.makeText(activity, "Thanks for your feedback!", Toast.LENGTH_SHORT).show()
                 bottomSheetDialog.dismiss()
             }
@@ -184,19 +146,37 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
         }
     }
 
-    private fun adjustUI(reviewList: ArrayList<Review>) {
-        if(reviewList.isEmpty()){
-            binding.layoutReviews.visibility = View.GONE
-            binding.noReviews.visibility = View.VISIBLE
-        } else {
-            binding.layoutReviews.visibility = View.VISIBLE
-            binding.noReviews.visibility = View.GONE
-        }
+    private fun postReview(rating: RatingBar?, review: TextInputEditText?) {
+        val request = PostReviewRequest(rating!!.rating.toDouble().toInt().toString(), review!!.text.toString(), viewModel.showLiveData.value!!.id)
+
+        val accessToken = sharedPreferences.getString("accessToken", "empty")
+        val client = sharedPreferences.getString("client", "empty")
+        val uid = sharedPreferences.getString("uid", "empty")
 
 
-   //     binding.showPicture.setImageResource(viewModel.showLiveData.value!!.imageResourceID)
+        ApiModule.initRetrofit(requireContext())
 
+        ApiModule.retrofit.postReviews(accessToken!!, client!!, uid!!, request).enqueue(object :
+            Callback<PostReviewResponse> {
+            override fun onResponse(call: Call<PostReviewResponse>, response: Response<PostReviewResponse>) {
+                if(response.isSuccessful){
+                    parentActivity.showErrorSnackBar("Thanks for your feedback!", false)
+                    parentActivity.hideProgressDialog()
+                } else {
+                    parentActivity.showErrorSnackBar("There was a problem posting your review!", true)
+                    parentActivity.hideProgressDialog()
+                }
+            }
+
+            override fun onFailure(call: Call<PostReviewResponse>, t: Throwable) {
+                parentActivity.showErrorSnackBar("Oops! Something went wrong!", true)
+                parentActivity.hideProgressDialog()
+            }
+
+
+        })
     }
+
 
     private fun adjustActionBarToScroll() {
         binding.mainScreenScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->      //Changes the ActionBar when scrolled. It looks janky, but I am sure a custom animation could fix it. I will look into this in the future.
@@ -216,12 +196,6 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     }
 
 
-    private fun toggleReviewButtonOff() {
-        binding.addReviewButton.setEnabled(false)
-        binding.addReviewButton.text = "Already added a review"
-    }
-
-
 
     private fun setupActionBar() {
 
@@ -236,6 +210,8 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
         }
 
         binding.toolbarShowDetailsActivity.setNavigationOnClickListener { activity!!.onBackPressed() }
+
+        adjustActionBarToScroll()
     }
 
     private fun initReviewsRecyclerView() {

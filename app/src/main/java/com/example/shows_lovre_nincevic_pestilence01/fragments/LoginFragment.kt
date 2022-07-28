@@ -3,25 +3,19 @@ package com.example.shows_lovre_nincevic_pestilence01.fragments
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
 import com.example.shows_lovre_nincevic_pestilence01.R
 import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
 import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
 import com.example.shows_lovre_nincevic_pestilence01.api.requests.LoginRequest
-import com.example.shows_lovre_nincevic_pestilence01.api.requests.RegisterRequest
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.LoginResponse
-import com.example.shows_lovre_nincevic_pestilence01.api.responses.RegisterResponse
 import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentLoginBinding
-import com.example.shows_lovre_nincevic_pestilence01.models.User
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 import retrofit2.Call
 import retrofit2.Callback
@@ -105,7 +99,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     putString(Constants.EMAIL_KEY, binding.emailLoginText.text.toString())
                 }.apply()
 
-                parentActivity.showProgressDialog("Please wait")
+                parentActivity.showProgressDialog()
 
                 val loginRequest = LoginRequest(
                     email = binding.emailLoginText.text.toString(),
@@ -127,14 +121,14 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                                 putString("client", client)
                                 putString("uid", uid)
                             }.apply()
-
+                            parentActivity.hideProgressDialog()
                             findNavController().navigate(R.id.action_loginFragment_to_showsFragment)
                             parentActivity.showErrorSnackBar("You have successfully logged in!", false)
                         }
                         else{
                             parentActivity.showErrorSnackBar("Please provide valid credentials", true)
+                            parentActivity.hideProgressDialog()
                         }
-                        parentActivity.hideProgressDialog()
                     }
 
                     override fun onFailure(call: Call<LoginResponse>, t: Throwable) {

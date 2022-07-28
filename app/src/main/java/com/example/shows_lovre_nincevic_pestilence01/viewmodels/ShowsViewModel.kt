@@ -2,8 +2,6 @@ package com.example.shows_lovre_nincevic_pestilence01.viewmodels
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -32,13 +30,12 @@ class ShowsViewModel: ViewModel() {
 
     fun setContext(context: Context, parentActivity: MainActivity){
         this.context = context
-        parentActivity.showProgressDialog("Please wait")
         loadShows()
-        loadCurrentUser()
-        parentActivity.hideProgressDialog()
+        loadCurrentUser(parentActivity)
+
     }
 
-    private fun loadCurrentUser() {
+    private fun loadCurrentUser(parentActivity: MainActivity) {
         sharedPreferences = context.getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
 
         val accessToken = sharedPreferences.getString("accessToken", "empty")

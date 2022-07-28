@@ -63,7 +63,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             }
 
             else if (emailPattern.containsMatchIn(binding.emailRegisterText.text.toString())) {
-                parentActivity.showProgressDialog("Please wait")
+                parentActivity.showProgressDialog()
 
                 val registerRequest = RegisterRequest(
                     email = binding.emailRegisterText.text.toString(),
