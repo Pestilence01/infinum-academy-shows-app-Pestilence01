@@ -32,15 +32,19 @@ class ShowsAdapter(
     }
 
 
-    inner class ShowViewHolder(private val binding: ShowItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ShowViewHolder(private val binding: ShowItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Show){
+        fun bind(item: Show) {
             Glide.with(context).load(item.image_url).into(binding.showItemImage)
             binding.showItemTitle.text = item.title
             binding.showItemDescription.text = item.description
 
             binding.showCardView.setOnClickListener { view ->
-                view.findNavController().navigate(R.id.action_showsFragment_to_showDetailsFragment, bundleOf(Constants.SHOW_EXTRA_KEY to item.id))
+                view.findNavController().navigate(
+                    R.id.action_showsFragment_to_showDetailsFragment,
+                    bundleOf(Constants.SHOW_EXTRA_KEY to item.id)
+                )
             }
         }
     }

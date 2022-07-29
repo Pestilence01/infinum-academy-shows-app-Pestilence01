@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
 
-        }
+    }
 
     fun showProgressDialog() {
         mProgressDialog = Dialog(this)
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     R.color.colorSnackBarError
                 )
             )
-        }else{
+        } else {
             snackBarView.setBackgroundColor(
                 ContextCompat.getColor(
                     this@MainActivity,

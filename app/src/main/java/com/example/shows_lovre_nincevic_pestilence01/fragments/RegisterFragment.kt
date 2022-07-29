@@ -7,16 +7,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
 import com.example.shows_lovre_nincevic_pestilence01.R
 import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
 import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
-import com.example.shows_lovre_nincevic_pestilence01.api.requests.LoginRequest
 import com.example.shows_lovre_nincevic_pestilence01.api.requests.RegisterRequest
-import com.example.shows_lovre_nincevic_pestilence01.api.responses.LoginResponse
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.RegisterResponse
 import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentRegisterBinding
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
@@ -36,7 +32,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+        sharedPreferences =
+            requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
 
         parentActivity = (activity!! as MainActivity)
 
@@ -58,11 +55,9 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
             val emailPattern: Regex = Regex(".+@.+[.].*")
 
-            if(binding.passwordRegisterText.text.toString() != binding.repeatPasswordRegisterText.text.toString()){
+            if (binding.passwordRegisterText.text.toString() != binding.repeatPasswordRegisterText.text.toString()) {
                 parentActivity.showErrorSnackBar("Passwords do not match!", true)
-            }
-
-            else if (emailPattern.containsMatchIn(binding.emailRegisterText.text.toString())) {
+            } else if (emailPattern.containsMatchIn(binding.emailRegisterText.text.toString())) {
                 parentActivity.showProgressDialog()
 
                 val registerRequest = RegisterRequest(
@@ -76,15 +71,17 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                         call: Call<RegisterResponse>,
                         response: Response<RegisterResponse>
                     ) {
-                        if(response.isSuccessful){
+                        if (response.isSuccessful) {
                             parentActivity.showErrorSnackBar("You successfully registered!", false)
-                            sharedPreferences.edit().apply(){
+                            sharedPreferences.edit().apply() {
                                 putBoolean(Constants.REGISTERED_KEY, true)
                             }.apply()
                             findNavController().popBackStack()
-                        }
-                        else {
-                            parentActivity.showErrorSnackBar("Email already taken! Use a different one", true)
+                        } else {
+                            parentActivity.showErrorSnackBar(
+                                "Email already taken! Use a different one",
+                                true
+                            )
                         }
                         parentActivity.hideProgressDialog()
                     }
@@ -113,7 +110,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentRegisterBinding.inflate(inflater,container,false)
+        _binding = FragmentRegisterBinding.inflate(inflater, container, false)
         return binding.root
     }
 

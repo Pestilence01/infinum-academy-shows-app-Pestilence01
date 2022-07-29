@@ -27,6 +27,7 @@
 
     </style>
 
+
     <style name="RatingBar.AppTheme.NoActionBar"
         parent="Theme.MaterialComponents.Light.DarkActionBar">
         <item name="windowActionBar">false</item>

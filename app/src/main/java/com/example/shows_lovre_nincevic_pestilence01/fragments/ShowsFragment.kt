@@ -76,7 +76,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentShowsBinding.inflate(inflater,container,false)
+        _binding = FragmentShowsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -85,49 +85,52 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
         parentActivity = (activity!! as MainActivity)
 
-        parentActivity.showProgressDialog()
 
         viewModel.setContext(requireContext(), parentActivity)
 
-        sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+        sharedPreferences =
+            requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
 
         username = sharedPreferences.getString(Constants.USERNAME_KEY, "John Doe")!!
 
 
         val currentPhoto = getCurrentProfilePhoto()
 
-        if(currentPhoto == null){  // If the user hasn't changed their profile, it will be set to the default one
+        if (currentPhoto == null) {  // If the user hasn't changed their profile, it will be set to the default one
             Glide.with(context!!).load(R.drawable.ic_profile_placeholder).into(binding.editProfile)
-        } else{
+        } else {
             Glide.with(context!!).load(currentPhoto).into(binding.editProfile)
         }
 
-        activity!!.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        activity!!.window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
         // this line hides the top of the screen (battery life, time, wifi...) allowing the application to take up the entire screen
 
-        viewModel.showsListLiveData.observe(viewLifecycleOwner){
-            if(it.isEmpty()){
+        viewModel.showsListLiveData.observe(viewLifecycleOwner) {
+            if (it.isEmpty()) {
                 binding.showsRecyclerView.visibility = View.GONE
                 binding.constraintLayoutEmptyState.visibility = View.VISIBLE
                 parentActivity.hideProgressDialog()
-            }
-
-            else{
+            } else {
                 initShowsRecyclerView(it)
                 parentActivity.hideProgressDialog()
             }
         }
 
 
-        viewModel.currentUserLiveData.observe(viewLifecycleOwner){
-                // set up the observer
-        }
-
-
         setupEditProfileAndBottomSheet()
 
-    }
+        binding.topRated.setOnClickListener {
+            if (binding.topRated.isChecked) {
+                viewModel.loadTopRatedShows()
+            } else {
+                viewModel.loadShows()
+            }
+        }
 
+    }
 
 
     private fun setupEditProfileAndBottomSheet() {
@@ -140,25 +143,29 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
             val bottomSheetView = LayoutInflater.from(activity).inflate(
                 R.layout.bottom_sheet_edit_profile, activity!!.findViewById(
                     R.id.bottomSheet
-                ))
+                )
+            )
 
             bottomSheetDialog.setContentView(bottomSheetView)
 
             val currentPhoto = getCurrentProfilePhoto()
 
 
-            photo = bottomSheetDialog.findViewById<CircleImageView>(R.id.profilePicture)!!      // I couldn't find a way to bind the elements from the dialog so I used the old fashioned findViewById way. If you, reader, know how to fix this problem, I would appreciate it.
-            val email: TextView? = bottomSheetDialog.findViewById<TextView>(R.id.emailAddressEditProfile)
+            photo =
+                bottomSheetDialog.findViewById<CircleImageView>(R.id.profilePicture)!!      // I couldn't find a way to bind the elements from the dialog so I used the old fashioned findViewById way. If you, reader, know how to fix this problem, I would appreciate it.
+            val email: TextView? =
+                bottomSheetDialog.findViewById<TextView>(R.id.emailAddressEditProfile)
             val changePhoto: Button? = bottomSheetDialog.findViewById(R.id.changeProfilePhoto)
             val logout: Button? = bottomSheetDialog.findViewById(R.id.logoutButton)
 
-            val emailSharedPreferences = sharedPreferences.getString(Constants.EMAIL_KEY, "JohnDoe@gmail.com")!!
+            val emailSharedPreferences =
+                sharedPreferences.getString(Constants.EMAIL_KEY, "JohnDoe@gmail.com")!!
 
             email!!.text = emailSharedPreferences
 
-            if(currentPhoto == null){
+            if (currentPhoto == null) {
                 Glide.with(context!!).load(R.drawable.ic_profile_placeholder).into(photo)
-            } else{
+            } else {
                 Glide.with(context!!).load(currentPhoto).into(photo)
             }
 
@@ -166,20 +173,27 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
             logout?.setOnClickListener {
 
-                MaterialAlertDialogBuilder(context!!, R.style.AlertDialogTheme).setTitle("Are you sure you want to log out?").setPositiveButton("Yes", object: DialogInterface.OnClickListener{
-                    override fun onClick(p0: DialogInterface?, p1: Int) {
-                        Toast.makeText(activity!!, "You have successfully logged out!", Toast.LENGTH_SHORT).show()
-                        bottomSheetDialog.dismiss()
+                MaterialAlertDialogBuilder(
+                    context!!,
+                    R.style.AlertDialogTheme
+                ).setTitle("Are you sure you want to log out?")
+                    .setPositiveButton("Yes", object : DialogInterface.OnClickListener {
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            parentActivity.showErrorSnackBar(
+                                "You have successfully logged out!",
+                                false
+                            )
+                            bottomSheetDialog.dismiss()
 
-                        val editor: Editor = sharedPreferences.edit()
-                        editor.putBoolean(Constants.REMEMBER_ME_KEY, false)
-                        editor.apply()
+                            val editor: Editor = sharedPreferences.edit()
+                            editor.putBoolean(Constants.REMEMBER_ME_KEY, false)
+                            editor.apply()
 
-                        findNavController().navigate(R.id.action_showsFragment_to_loginFragment)
-                        bottomSheetDialog.dismiss()
-                    }
+                            findNavController().navigate(R.id.action_showsFragment_to_loginFragment)
+                            bottomSheetDialog.dismiss()
+                        }
 
-                }).setNegativeButton("No", object: DialogInterface.OnClickListener{
+                    }).setNegativeButton("No", object : DialogInterface.OnClickListener {
                     override fun onClick(p0: DialogInterface?, p1: Int) {
                         bottomSheetDialog.dismiss()
                     }
@@ -191,23 +205,46 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
             changePhoto?.setOnClickListener {
 
-                MaterialAlertDialogBuilder(context!!, R.style.AlertDialogTheme).setTitle("Where do you want to take your image from?").setPositiveButton("Storage", object: DialogInterface.OnClickListener{
-                    override fun onClick(p0: DialogInterface?, p1: Int) {
-                        if (ContextCompat.checkSelfPermission(context!!, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
-                            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                            startActivityForResult(intent, STORAGE_REQUEST_CODE)
-                        } else {
-                            ActivityCompat.requestPermissions(activity!!, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), STORAGE_PERMISSION_CODE)
+                MaterialAlertDialogBuilder(
+                    context!!,
+                    R.style.AlertDialogTheme
+                ).setTitle("Where do you want to take your image from?")
+                    .setPositiveButton("Storage", object : DialogInterface.OnClickListener {
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            if (ContextCompat.checkSelfPermission(
+                                    context!!,
+                                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                val intent = Intent(
+                                    Intent.ACTION_PICK,
+                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                                )
+                                startActivityForResult(intent, STORAGE_REQUEST_CODE)
+                            } else {
+                                ActivityCompat.requestPermissions(
+                                    activity!!,
+                                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                                    STORAGE_PERMISSION_CODE
+                                )
+                            }
                         }
-                    }
 
-                }).setNegativeButton("Camera", object: DialogInterface.OnClickListener{
+                    }).setNegativeButton("Camera", object : DialogInterface.OnClickListener {
                     override fun onClick(p0: DialogInterface?, p1: Int) {
-                        if (ContextCompat.checkSelfPermission(context!!, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
+                        if (ContextCompat.checkSelfPermission(
+                                context!!,
+                                android.Manifest.permission.CAMERA
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
                             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                             startActivityForResult(intent, CAMERA_REQUEST_CODE)
                         } else {
-                            ActivityCompat.requestPermissions(activity!!, arrayOf(android.Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE)
+                            ActivityCompat.requestPermissions(
+                                activity!!,
+                                arrayOf(android.Manifest.permission.CAMERA),
+                                CAMERA_PERMISSION_CODE
+                            )
                         }
                     }
 
@@ -225,21 +262,30 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if(requestCode == CAMERA_PERMISSION_CODE){
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 startActivityForResult(intent, CAMERA_REQUEST_CODE)
             } else {
-                Toast.makeText(context!!, "Please enable the permissions for this feature in the settings!!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context!!,
+                    "Please enable the permissions for this feature in the settings!!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
-        if(requestCode == STORAGE_PERMISSION_CODE){
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                val intent =
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 startActivityForResult(intent, STORAGE_REQUEST_CODE)
             } else {
-                Toast.makeText(context!!, "Please enable the permissions for this feature in the settings!!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context!!,
+                    "Please enable the permissions for this feature in the settings!!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -247,20 +293,24 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(resultCode == Activity.RESULT_OK){
-            if(requestCode == CAMERA_REQUEST_CODE){
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == CAMERA_REQUEST_CODE) {
                 val picture: Bitmap = data!!.extras!!.get("data") as Bitmap
-                val imageSaver = ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images").save(picture)
-            //  updateProfilePicture()
+                val imageSaver =
+                    ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images")
+                        .save(picture)
+                //  updateProfilePicture()
                 Glide.with(context!!).load(picture).into(photo)
                 Glide.with(context!!).load(picture).into(binding.editProfile)
             }
-            if(requestCode == STORAGE_REQUEST_CODE){
+            if (requestCode == STORAGE_REQUEST_CODE) {
                 val pickedPhoto = data!!.data
                 val source = ImageDecoder.createSource(activity!!.contentResolver, pickedPhoto!!)
                 val bitmap = ImageDecoder.decodeBitmap(source)
-                val imageSaver = ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images").save(bitmap)
-         //     updateProfilePicture()
+                val imageSaver =
+                    ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images")
+                        .save(bitmap)
+                //     updateProfilePicture()
                 Glide.with(context!!).load(pickedPhoto).into(photo)
                 Glide.with(context!!).load(pickedPhoto).into(binding.editProfile)
             }
@@ -268,7 +318,8 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
     }
 
     private fun updateProfilePicture() {    // unsuccessful attempt to update the profile photo on AWS :)
-        sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+        sharedPreferences =
+            requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
 
         val accessToken = sharedPreferences.getString("accessToken", "empty")
         val client = sharedPreferences.getString("client", "empty")
@@ -276,10 +327,18 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
         ApiModule.initRetrofitAws(requireContext(), Constants.AWS_URL)
 
-        ApiModule.retrofit.updateProfilePhoto(accessToken!!, client!!, uid!!, "/images/${username}.png").enqueue(object :
+        ApiModule.retrofit.updateProfilePhoto(
+            accessToken!!,
+            client!!,
+            uid!!,
+            "/images/${username}.png"
+        ).enqueue(object :
             Callback<UpdateProfilePhotoResponse> {
-            override fun onResponse(call: Call<UpdateProfilePhotoResponse>, response: Response<UpdateProfilePhotoResponse>) {
-                if(response.isSuccessful){
+            override fun onResponse(
+                call: Call<UpdateProfilePhotoResponse>,
+                response: Response<UpdateProfilePhotoResponse>
+            ) {
+                if (response.isSuccessful) {
                     Log.i("IS SUCCESSFUL UPDATE PHOTO", " YES")
                 } else {
                     Log.i("IS SUCCESSFUL", " NO")
@@ -294,16 +353,17 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         })
     }
 
-    private fun getCurrentProfilePhoto(): Bitmap?{  //returns the current profile photo or null (in that case the default placeholder is used)
+    private fun getCurrentProfilePhoto(): Bitmap? {  //returns the current profile photo or null (in that case the default placeholder is used)
         val bitmap: Bitmap
-        try{
-            bitmap = ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images").load()!!
-        } catch (e: Exception){
+        try {
+            bitmap =
+                ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images")
+                    .load()!!
+        } catch (e: Exception) {
             return null
         }
         return bitmap
     }
-
 
 
     private fun initShowsRecyclerView(list: List<Show>) {

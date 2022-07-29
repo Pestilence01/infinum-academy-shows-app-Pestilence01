@@ -27,9 +27,12 @@ class ShowsViewModel: ViewModel() {
     private lateinit var context: Context
     private lateinit var sharedPreferences: SharedPreferences
 
+    private lateinit var parentActivity: MainActivity
+
 
     fun setContext(context: Context, parentActivity: MainActivity){
         this.context = context
+        this.parentActivity = parentActivity
         loadShows()
         loadCurrentUser(parentActivity)
 
@@ -62,7 +65,7 @@ class ShowsViewModel: ViewModel() {
         })
     }
 
-    private fun loadShows(){
+    fun loadShows(){
 
         sharedPreferences = context.getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
 
@@ -72,11 +75,14 @@ class ShowsViewModel: ViewModel() {
 
         ApiModule.initRetrofit(context)
 
+        parentActivity.showProgressDialog()
+
         ApiModule.retrofit.getShows(accessToken!!, client!!, uid!!).enqueue(object :
             Callback<ShowsResponse> {
             override fun onResponse(call: Call<ShowsResponse>, response: Response<ShowsResponse>) {
                 if(response.isSuccessful){
                     _showsListLiveData.value = response.body()!!.shows.asList()
+                    parentActivity.hideProgressDialog()
                 } else {
 
                 }
@@ -90,6 +96,37 @@ class ShowsViewModel: ViewModel() {
         })
 
    }
+
+    fun loadTopRatedShows() {
+
+        sharedPreferences = context.getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+
+        val accessToken = sharedPreferences.getString("accessToken", "empty")
+        val client = sharedPreferences.getString("client", "empty")
+        val uid = sharedPreferences.getString("uid", "empty")
+
+        ApiModule.initRetrofit(context)
+
+        parentActivity.showProgressDialog()
+
+        ApiModule.retrofit.getTopRatedShows(accessToken!!, client!!, uid!!).enqueue(object :
+            Callback<ShowsResponse> {
+            override fun onResponse(call: Call<ShowsResponse>, response: Response<ShowsResponse>) {
+                if(response.isSuccessful){
+                    _showsListLiveData.value = response.body()!!.shows.asList()
+                    parentActivity.hideProgressDialog()
+                } else {
+
+                }
+            }
+
+            override fun onFailure(call: Call<ShowsResponse>, t: Throwable) {
+
+            }
+
+
+        })
+    }
 
 
 }

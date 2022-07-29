@@ -45,12 +45,11 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     private lateinit var parentActivity: MainActivity
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentShowDetailsBinding.inflate(inflater,container,false)
+        _binding = FragmentShowDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -63,16 +62,21 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
         parentActivity.showProgressDialog()
 
-        sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+        sharedPreferences =
+            requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
         username = sharedPreferences.getString(Constants.USERNAME_KEY, "John Doe").toString()
 
-        viewModel.setParameters(requireContext(), arguments!!.get(Constants.SHOW_EXTRA_KEY).toString(), parentActivity)
+        viewModel.setParameters(
+            requireContext(),
+            arguments!!.get(Constants.SHOW_EXTRA_KEY).toString(),
+            parentActivity
+        )
 
-        viewModel.showLiveData.observe(viewLifecycleOwner){
+        viewModel.showLiveData.observe(viewLifecycleOwner) {
             setupShowUI()
         }
         viewModel.getReviews(arguments!!.get(Constants.SHOW_EXTRA_KEY).toString())
-        viewModel.reviewsLiveData.observe(viewLifecycleOwner){
+        viewModel.reviewsLiveData.observe(viewLifecycleOwner) {
             initReviewsRecyclerView()
             instantiateBottomSheet()
             parentActivity.hideProgressDialog()
@@ -84,19 +88,21 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     private fun setupShowUI() {
         binding.showTitleActionBar.text = viewModel.showLiveData.value!!.title
         binding.showTitle.text = viewModel.showLiveData.value!!.title
-        Glide.with(requireContext()).load(viewModel.showLiveData.value!!.image_url).into(binding.showPicture)
+        Glide.with(requireContext()).load(viewModel.showLiveData.value!!.image_url)
+            .into(binding.showPicture)
         binding.showDescription.text = viewModel.showLiveData.value!!.description
         checkReviewAmount()
         setupRatingDetails()
     }
 
     private fun setupRatingDetails() {
-        binding.averageReview.text = "${viewModel.showLiveData.value!!.no_of_reviews} REVIEWS, ${viewModel.showLiveData.value!!.average_rating} AVERAGE"
+        binding.averageReview.text =
+            "${viewModel.showLiveData.value!!.no_of_reviews} REVIEWS, ${viewModel.showLiveData.value!!.average_rating} AVERAGE"
         binding.ratingBar.rating = viewModel.showLiveData.value!!.average_rating!!.toFloat()
     }
 
     private fun checkReviewAmount() {
-        if(viewModel.showLiveData.value!!.no_of_reviews == "0"){
+        if (viewModel.showLiveData.value!!.no_of_reviews == "0") {
             binding.layoutReviews.visibility = View.GONE
             binding.noReviews.visibility = View.VISIBLE
         } else {
@@ -104,8 +110,6 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
             binding.noReviews.visibility = View.GONE
         }
     }
-
-
 
 
     private fun instantiateBottomSheet() {
@@ -117,12 +121,14 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
             val bottomSheetView = LayoutInflater.from(activity).inflate(
                 R.layout.bottom_sheet_review_layout, activity!!.findViewById(
                     R.id.bottomSheet
-                ))
+                )
+            )
 
             bottomSheetDialog.setContentView(bottomSheetView)
             bottomSheetDialog.show()
 
-            val submit: Button? = bottomSheetDialog.findViewById<Button>(R.id.submitButton)      // I couldn't find a way to bind the elements from the dialog so I used the old fashioned findViewById way. If you, reader, know how to fix this problem, I would appreciate it.
+            val submit: Button? =
+                bottomSheetDialog.findViewById<Button>(R.id.submitButton)      // I couldn't find a way to bind the elements from the dialog so I used the old fashioned findViewById way. If you, reader, know how to fix this problem, I would appreciate it.
             val rating: RatingBar? = bottomSheetDialog.findViewById<RatingBar>(R.id.ratingBar)
             val review: TextInputEditText? = bottomSheetDialog.findViewById(R.id.review)
             val cancel: ImageView? = bottomSheetDialog.findViewById(R.id.dismissBottomSheet)
@@ -147,7 +153,11 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     }
 
     private fun postReview(rating: RatingBar?, review: TextInputEditText?) {
-        val request = PostReviewRequest(rating!!.rating.toDouble().toInt().toString(), review!!.text.toString(), viewModel.showLiveData.value!!.id)
+        val request = PostReviewRequest(
+            rating!!.rating.toDouble().toInt().toString(),
+            review!!.text.toString(),
+            viewModel.showLiveData.value!!.id
+        )
 
         val accessToken = sharedPreferences.getString("accessToken", "empty")
         val client = sharedPreferences.getString("client", "empty")
@@ -158,12 +168,18 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
         ApiModule.retrofit.postReviews(accessToken!!, client!!, uid!!, request).enqueue(object :
             Callback<PostReviewResponse> {
-            override fun onResponse(call: Call<PostReviewResponse>, response: Response<PostReviewResponse>) {
-                if(response.isSuccessful){
+            override fun onResponse(
+                call: Call<PostReviewResponse>,
+                response: Response<PostReviewResponse>
+            ) {
+                if (response.isSuccessful) {
                     parentActivity.showErrorSnackBar("Thanks for your feedback!", false)
                     parentActivity.hideProgressDialog()
                 } else {
-                    parentActivity.showErrorSnackBar("There was a problem posting your review!", true)
+                    parentActivity.showErrorSnackBar(
+                        "There was a problem posting your review!",
+                        true
+                    )
                     parentActivity.hideProgressDialog()
                 }
             }
@@ -180,13 +196,12 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
     private fun adjustActionBarToScroll() {
         binding.mainScreenScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->      //Changes the ActionBar when scrolled. It looks janky, but I am sure a custom animation could fix it. I will look into this in the future.
-            if(scrollY > 0){
+            if (scrollY > 0) {
                 (activity as AppCompatActivity).supportActionBar?.elevation = 10f
                 (activity as AppCompatActivity).supportActionBar?.title = ""
                 binding.showTitleActionBar.visibility = View.VISIBLE
                 binding.showTitle.visibility = View.GONE
-            }
-            else{
+            } else {
                 (activity as AppCompatActivity).supportActionBar?.elevation = 0f
                 binding.showTitleActionBar.visibility = View.GONE
                 binding.showTitle.visibility = View.VISIBLE
@@ -194,7 +209,6 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
         }
     }
-
 
 
     private fun setupActionBar() {
@@ -219,8 +233,14 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
         binding.layoutReviews.visibility = View.VISIBLE
 
-        binding.reviews.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+        binding.reviews.layoutManager =
+            LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         binding.reviews.adapter = adapter
-        binding.reviews.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
+        binding.reviews.addItemDecoration(
+            DividerItemDecoration(
+                activity,
+                DividerItemDecoration.VERTICAL
+            )
+        )
     }
 }

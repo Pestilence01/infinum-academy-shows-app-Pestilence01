@@ -29,7 +29,7 @@ object ApiModule {
             .create(ShowsApiService::class.java)
     }
 
-    fun initRetrofitAws(context: Context, url: String){
+    fun initRetrofitAws(context: Context, url: String) {
         val okhttp = OkHttpClient.Builder()
             .addInterceptor(ChuckerInterceptor.Builder(context).build())
             .build()

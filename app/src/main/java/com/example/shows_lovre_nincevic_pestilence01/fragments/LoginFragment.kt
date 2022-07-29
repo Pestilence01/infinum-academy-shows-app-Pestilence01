@@ -35,14 +35,15 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+        sharedPreferences =
+            requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
 
     }
 
     override fun onResume() { //checks if the user just registered
         super.onResume()
         val justRegistered = sharedPreferences.getBoolean(Constants.REGISTERED_KEY, false)
-        if(justRegistered){
+        if (justRegistered) {
             binding.registerButton.visibility = View.GONE
             binding.login.text = "Registration \nsuccessful!"
         } else {
@@ -50,7 +51,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             binding.login.text = "Login"
         }
 
-        sharedPreferences.edit().apply(){
+        sharedPreferences.edit().apply() {
             putBoolean(Constants.REGISTERED_KEY, false)
         }.apply()
     }
@@ -65,11 +66,14 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         val savedBoolean = sharedPreferences.getBoolean(Constants.REMEMBER_ME_KEY, false)
 
 
-        if(savedBoolean){
+        if (savedBoolean) {
             findNavController().navigate(R.id.action_loginFragment_to_showsFragment)
         }
 
-        activity!!.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        activity!!.window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
 
         binding.emailLoginText.doOnTextChanged { _, _, _, _ ->
             toggleButtonEnabled()
@@ -91,9 +95,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
             if (emailPattern.containsMatchIn(binding.emailLoginText.text.toString())) {
 
-                username = binding.emailLoginText.text!!.split("@")[0]   // Username is the string before "@"
+                username =
+                    binding.emailLoginText.text!!.split("@")[0]   // Username is the string before "@"
 
-                sharedPreferences.edit().apply(){
+                sharedPreferences.edit().apply() {
                     putBoolean(Constants.REMEMBER_ME_KEY, binding.rememberMe.isChecked)
                     putString(Constants.USERNAME_KEY, username)
                     putString(Constants.EMAIL_KEY, binding.emailLoginText.text.toString())
@@ -111,22 +116,27 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                         call: Call<LoginResponse>,
                         response: Response<LoginResponse>
                     ) {
-                        if(response.isSuccessful){
+                        if (response.isSuccessful) {
                             val accessToken = response.headers().get("access-token")
                             val client = response.headers().get("client")
                             val uid = response.headers().get("uid")
 
-                            sharedPreferences.edit().apply(){
+                            sharedPreferences.edit().apply() {
                                 putString("accessToken", accessToken)
                                 putString("client", client)
                                 putString("uid", uid)
                             }.apply()
                             parentActivity.hideProgressDialog()
                             findNavController().navigate(R.id.action_loginFragment_to_showsFragment)
-                            parentActivity.showErrorSnackBar("You have successfully logged in!", false)
-                        }
-                        else{
-                            parentActivity.showErrorSnackBar("Please provide valid credentials", true)
+                            parentActivity.showErrorSnackBar(
+                                "You have successfully logged in!",
+                                false
+                            )
+                        } else {
+                            parentActivity.showErrorSnackBar(
+                                "Please provide valid credentials",
+                                true
+                            )
                             parentActivity.hideProgressDialog()
                         }
                     }
@@ -150,7 +160,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentLoginBinding.inflate(inflater,container,false)
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
 

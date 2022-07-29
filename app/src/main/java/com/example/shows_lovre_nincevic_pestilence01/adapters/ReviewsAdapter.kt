@@ -26,13 +26,14 @@ class ReviewsAdapter(
         return items.size
     }
 
-    inner class ReviewViewHolder(private val binding: ReviewItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ReviewViewHolder(private val binding: ReviewItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Review){
-            if(item.user.image_url == null){
-                Glide.with(context).load(R.drawable.ic_profile_placeholder).into(binding.profileCircularImage)
-            }
-            else {
+        fun bind(item: Review) {
+            if (item.user.image_url == null) {
+                Glide.with(context).load(R.drawable.ic_profile_placeholder)
+                    .into(binding.profileCircularImage)
+            } else {
                 Glide.with(context).load(item.user.image_url).into(binding.profileCircularImage)
             }
             binding.username.text = item.user.email.toString().split("@")[0]
