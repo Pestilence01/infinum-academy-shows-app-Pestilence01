@@ -25,20 +25,6 @@
             </intent-filter>
 
         </activity>
-        <activity
-            android:name=".activities.ShowDetailsActivity"
-            android:exported="false"
-            android:theme="@style/RatingBar.AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.ShowsActivity"
-            android:exported="false"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.LoginActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"> <!-- A custom theme that hides the action bar -->
-        </activity>
     </application>
 
 </manifest>
