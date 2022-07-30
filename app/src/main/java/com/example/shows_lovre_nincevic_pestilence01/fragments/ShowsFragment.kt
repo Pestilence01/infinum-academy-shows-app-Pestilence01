@@ -299,18 +299,19 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
                 val imageSaver =
                     ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images")
                         .save(picture)
-                //  updateProfilePicture()
+                updateProfilePicture()
                 Glide.with(context!!).load(picture).into(photo)
                 Glide.with(context!!).load(picture).into(binding.editProfile)
             }
             if (requestCode == STORAGE_REQUEST_CODE) {
                 val pickedPhoto = data!!.data
+                Log.i("PATH: ", pickedPhoto!!.path.toString())
                 val source = ImageDecoder.createSource(activity!!.contentResolver, pickedPhoto!!)
                 val bitmap = ImageDecoder.decodeBitmap(source)
                 val imageSaver =
                     ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images")
                         .save(bitmap)
-                //     updateProfilePicture()
+                updateProfilePicture()
                 Glide.with(context!!).load(pickedPhoto).into(photo)
                 Glide.with(context!!).load(pickedPhoto).into(binding.editProfile)
             }
