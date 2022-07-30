@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -26,13 +25,11 @@ import com.example.shows_lovre_nincevic_pestilence01.R
 import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
 import com.example.shows_lovre_nincevic_pestilence01.adapters.ShowsAdapter
 import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
-import com.example.shows_lovre_nincevic_pestilence01.api.responses.CurrentUserResponse
-import com.example.shows_lovre_nincevic_pestilence01.api.responses.PostReviewResponse
-import com.example.shows_lovre_nincevic_pestilence01.api.responses.ShowsResponse
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.UpdateProfilePhotoResponse
+import com.example.shows_lovre_nincevic_pestilence01.application.ShowsApplication
+import com.example.shows_lovre_nincevic_pestilence01.database.modelfactory.ShowsViewModelFactory
 import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowsBinding
 import com.example.shows_lovre_nincevic_pestilence01.models.Show
-import com.example.shows_lovre_nincevic_pestilence01.models.User
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 import com.example.shows_lovre_nincevic_pestilence01.utils.ImageSaver
 import com.example.shows_lovre_nincevic_pestilence01.viewmodels.ShowsViewModel
@@ -59,7 +56,9 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
     private var _binding: FragmentShowsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel by viewModels<ShowsViewModel>()
+    private val viewModel: ShowsViewModel by viewModels{
+        ShowsViewModelFactory((requireActivity().application as ShowsApplication).database)
+    }
 
 
     private lateinit var photo: CircleImageView

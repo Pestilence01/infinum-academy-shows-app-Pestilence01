@@ -1,9 +1,5 @@
 package com.example.shows_lovre_nincevic_pestilence01.models
 
-import android.graphics.Bitmap
-import android.os.Parcelable
-import androidx.annotation.DrawableRes
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

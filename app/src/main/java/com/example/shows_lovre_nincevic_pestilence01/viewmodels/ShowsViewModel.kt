@@ -9,6 +9,8 @@ import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
 import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.CurrentUserResponse
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.ShowsResponse
+import com.example.shows_lovre_nincevic_pestilence01.database.ShowsDatabase
+import com.example.shows_lovre_nincevic_pestilence01.database.entities.ShowEntity
 import com.example.shows_lovre_nincevic_pestilence01.models.Show
 import com.example.shows_lovre_nincevic_pestilence01.models.User
 import retrofit2.Call
@@ -16,7 +18,9 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class ShowsViewModel: ViewModel() {
+class ShowsViewModel(
+    private val database: ShowsDatabase
+): ViewModel() {
 
     private var _showsListLiveData = MutableLiveData<List<Show>>()
     val showsListLiveData: LiveData<List<Show>> = _showsListLiveData
@@ -36,6 +40,10 @@ class ShowsViewModel: ViewModel() {
         loadShows()
         loadCurrentUser(parentActivity)
 
+    }
+
+    fun loadShowsFromDB() {
+        val showEntities = database.showDao().getAllShows()
     }
 
     private fun loadCurrentUser(parentActivity: MainActivity) {

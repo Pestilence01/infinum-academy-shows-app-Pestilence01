@@ -9,13 +9,16 @@ import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
 import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.CurrentShowResponse
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.ReviewsResponse
+import com.example.shows_lovre_nincevic_pestilence01.database.ShowsDatabase
 import com.example.shows_lovre_nincevic_pestilence01.models.Review
 import com.example.shows_lovre_nincevic_pestilence01.models.Show
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ShowDetailsViewModel : ViewModel() {
+class ShowDetailsViewModel(
+    private val database: ShowsDatabase
+) : ViewModel() {
 
     private var _reviewsLiveData = MutableLiveData<List<Review>>()
     val reviewsLiveData: LiveData<List<Review>> = _reviewsLiveData
@@ -33,6 +36,10 @@ class ShowDetailsViewModel : ViewModel() {
         this.context = context
         sharedPreferences = context.getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
         getShow(id)
+    }
+
+    fun getReviewsFromDB(id: String){
+
     }
 
     fun getReviews(id: String) {
