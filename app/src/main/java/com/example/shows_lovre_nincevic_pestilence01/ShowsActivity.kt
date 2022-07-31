@@ -80,7 +80,7 @@ class ShowsActivity : AppCompatActivity() {
                 Review("Nothing compared to the power of the dark side!","Darth Vader", 1, R.drawable.ic_profile_placeholder)
             )
 
-            "stranger_things" -> return listOf() //empty list
+            "stranger_things" -> return emptyList() //empty list
 
             "krv_nije_voda" ->  return listOf(
                 Review("Star wars is better!","Princess Leia", 2, R.drawable.ic_profile_placeholder),

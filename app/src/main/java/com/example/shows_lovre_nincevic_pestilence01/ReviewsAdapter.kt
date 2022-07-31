@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shows_lovre_nincevic_pestilence01.databinding.ReviewItemBinding
 
 class ReviewsAdapter(
-    private var items: ArrayList<Review>,
+    private var items: MutableList<Review>,
 ) : RecyclerView.Adapter<ReviewsAdapter.ReviewViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewsAdapter.ReviewViewHolder {
         val binding = ReviewItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
