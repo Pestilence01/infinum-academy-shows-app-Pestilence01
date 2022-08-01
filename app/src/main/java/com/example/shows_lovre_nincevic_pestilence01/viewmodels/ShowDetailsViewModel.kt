@@ -2,6 +2,7 @@ package com.example.shows_lovre_nincevic_pestilence01.viewmodels
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,11 +11,15 @@ import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.CurrentShowResponse
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.ReviewsResponse
 import com.example.shows_lovre_nincevic_pestilence01.database.ShowsDatabase
+import com.example.shows_lovre_nincevic_pestilence01.database.entities.ReviewEntity
+import com.example.shows_lovre_nincevic_pestilence01.database.entities.ShowEntity
 import com.example.shows_lovre_nincevic_pestilence01.models.Review
 import com.example.shows_lovre_nincevic_pestilence01.models.Show
+import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.Executors
 
 class ShowDetailsViewModel(
     private val database: ShowsDatabase
@@ -34,12 +39,27 @@ class ShowDetailsViewModel(
 
     fun setParameters(context: Context, id: String, parentActivity: MainActivity) {
         this.context = context
-        sharedPreferences = context.getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
-        getShow(id)
+        sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE)
+        if(parentActivity.isOnline()) {
+            getShow(id)
+            getReviews(id)
+        }
     }
 
-    fun getReviewsFromDB(id: String){
+    fun setShow(show: Show){
+        _showLiveData.value = show
+    }
 
+    fun getShowFromDB(show_id: String): LiveData<ShowEntity> {
+        return database.showDao().getShow(show_id)
+    }
+
+    fun getReviewsFromDB(show_id: String): LiveData<List<ReviewEntity>> {
+        return database.reviewDao().getAllReviews(show_id)
+    }
+
+    fun setReviews(reviews: List<Review>) {
+        _reviewsLiveData.value = reviews
     }
 
     fun getReviews(id: String) {
@@ -58,17 +78,20 @@ class ShowDetailsViewModel(
                 response: Response<ReviewsResponse>
             ) {
                 if (response.isSuccessful) {
-                    _reviewsLiveData.value = response.body()!!.reviews.asList()
+                    setReviews(response.body()!!.reviews.asList())
+                    Executors.newSingleThreadExecutor().execute{
+                        putReviewsInDB()
+                    }
                 } else {
                     parentActivity.showErrorSnackBar(
-                        "You need to sign in or sign up before continuing.",
+                        Constants.SIGN_BEFORE_CONTINUING,
                         true
                     )
                 }
             }
 
             override fun onFailure(call: Call<ReviewsResponse>, t: Throwable) {
-                parentActivity.showErrorSnackBar("Oops! Something went wrong!", true)
+                parentActivity.showErrorSnackBar(Constants.SOMETHING_WRONG, true)
             }
 
 
@@ -76,7 +99,19 @@ class ShowDetailsViewModel(
 
     }
 
-    private fun getShow(id: String) {
+    private fun putReviewsInDB() {
+        val reviewList = _reviewsLiveData.value
+        val iterator = reviewList!!.iterator()
+        while(iterator.hasNext()){
+            val review = iterator.next()
+            val reviewEntity = ReviewEntity(id = review.id, comment = review.comment, rating = review.rating, show_id = review.show_id, user = review.user!!)
+            database.reviewDao().insertReview(reviewEntity)
+        }
+    }
+
+    fun getShow(id: String) {
+
+        sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
         val accessToken = sharedPreferences.getString("accessToken", "empty")
         val client = sharedPreferences.getString("client", "empty")
@@ -91,14 +126,14 @@ class ShowDetailsViewModel(
                 response: Response<CurrentShowResponse>
             ) {
                 if (response.isSuccessful) {
-                    _showLiveData.value = response.body()!!.show
+                    setShow(response.body()!!.show)
                 } else {
-                    parentActivity.showErrorSnackBar("We couldn't find this show!", true)
+                    parentActivity.showErrorSnackBar(Constants.CANNOT_FIND_SHOW, true)
                 }
             }
 
             override fun onFailure(call: Call<CurrentShowResponse>, t: Throwable) {
-                parentActivity.showErrorSnackBar("Oops! Something went wrong!", true)
+                parentActivity.showErrorSnackBar(Constants.SOMETHING_WRONG, true)
             }
 
 

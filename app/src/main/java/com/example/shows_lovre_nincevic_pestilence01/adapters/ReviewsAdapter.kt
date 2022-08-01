@@ -30,13 +30,13 @@ class ReviewsAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Review) {
-            if (item.user.image_url == null) {
+            if (item.user?.image_url == null || item.user?.image_url == "no_url") {
                 Glide.with(context).load(R.drawable.ic_profile_placeholder)
                     .into(binding.profileCircularImage)
             } else {
                 Glide.with(context).load(item.user.image_url).into(binding.profileCircularImage)
             }
-            binding.username.text = item.user.email.toString().split("@")[0]
+            binding.username.text = item.user?.email.toString().split("@")[0]
             binding.comment.text = item.comment
             binding.score.text = item.rating
         }

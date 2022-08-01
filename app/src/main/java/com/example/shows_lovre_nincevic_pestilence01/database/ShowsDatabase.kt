@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.shows_lovre_nincevic_pestilence01.database.daos.ReviewDao
 import com.example.shows_lovre_nincevic_pestilence01.database.daos.ShowDao
 import com.example.shows_lovre_nincevic_pestilence01.database.entities.ReviewEntity
@@ -14,8 +15,9 @@ import com.example.shows_lovre_nincevic_pestilence01.database.entities.ShowEntit
         ShowEntity::class,
         ReviewEntity::class
     ],
-    version = 1
+    version = 4
         )
+@TypeConverters(UserTypeConverter::class)  //used type converter to save custom User class to DB
 abstract class ShowsDatabase: RoomDatabase() {
 
     companion object {

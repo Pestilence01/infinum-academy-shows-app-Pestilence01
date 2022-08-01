@@ -4,13 +4,13 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.shows_lovre_nincevic_pestilence01.models.User
+import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 
 
-
-@Entity(tableName = "Review")
+@Entity(tableName = Constants.REVIEW)
 data class ReviewEntity(
     @ColumnInfo(name = "id") @PrimaryKey val id: String,
-    @ColumnInfo(name = "comment") val comment: String,
+    @ColumnInfo(name = "comment") val comment: String?,
     @ColumnInfo(name = "rating") val rating: String,
     @ColumnInfo(name = "show_id") val show_id: String,
     @ColumnInfo(name = "user") val user: User

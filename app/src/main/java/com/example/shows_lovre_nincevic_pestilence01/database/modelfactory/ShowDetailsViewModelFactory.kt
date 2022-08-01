@@ -13,6 +13,6 @@ class ShowDetailsViewModelFactory(
         if(modelClass.isAssignableFrom(ShowDetailsViewModel::class.java)){
             return ShowDetailsViewModel(database!!) as T
         }
-        throw IllegalArgumentException("Nope")
+        throw IllegalArgumentException()
     }
 }

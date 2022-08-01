@@ -4,6 +4,7 @@ import com.example.shows_lovre_nincevic_pestilence01.api.requests.LoginRequest
 import com.example.shows_lovre_nincevic_pestilence01.api.requests.PostReviewRequest
 import com.example.shows_lovre_nincevic_pestilence01.api.requests.RegisterRequest
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.*
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -67,10 +68,8 @@ interface ShowsApiService {
     ): Call<PostReviewResponse>
 
     @POST("/users")
+    @Multipart
     fun updateProfilePhoto(
-        @Header("access-token") accessToken: String,
-        @Header("client") client: String,
-        @Header("uid") uid: String,
-        @Field("image") path: String
+        @Part image: MultipartBody.Part
     ): Call<UpdateProfilePhotoResponse>
 }

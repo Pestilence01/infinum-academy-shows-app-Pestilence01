@@ -19,6 +19,7 @@ import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.crypto.Cipher
 
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
@@ -33,7 +34,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         super.onViewCreated(view, savedInstanceState)
 
         sharedPreferences =
-            requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
         parentActivity = (activity!! as MainActivity)
 
@@ -56,7 +57,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             val emailPattern: Regex = Regex(".+@.+[.].*")
 
             if (binding.passwordRegisterText.text.toString() != binding.repeatPasswordRegisterText.text.toString()) {
-                parentActivity.showErrorSnackBar("Passwords do not match!", true)
+                parentActivity.showErrorSnackBar(Constants.PASSWORDS_DO_NOT_MATCH, true)
             } else if (emailPattern.containsMatchIn(binding.emailRegisterText.text.toString())) {
                 parentActivity.showProgressDialog()
 
@@ -72,14 +73,14 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                         response: Response<RegisterResponse>
                     ) {
                         if (response.isSuccessful) {
-                            parentActivity.showErrorSnackBar("You successfully registered!", false)
+                            parentActivity.showErrorSnackBar(Constants.REGISTRATION_SUCCESSFUL, false)
                             sharedPreferences.edit().apply() {
                                 putBoolean(Constants.REGISTERED_KEY, true)
                             }.apply()
                             findNavController().popBackStack()
                         } else {
                             parentActivity.showErrorSnackBar(
-                                "Email already taken! Use a different one",
+                                Constants.EMAIL_TAKEN,
                                 true
                             )
                         }
@@ -87,13 +88,13 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                     }
 
                     override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                        parentActivity.showErrorSnackBar("Something went wrong!", true)
+                        parentActivity.showErrorSnackBar(Constants.CHECK_CONNECTION, true)
                         parentActivity.hideProgressDialog()
                     }
 
                 })
             } else {
-                binding.emailRegisterText.setError("Please provide a valid email address!")
+                binding.emailRegisterText.setError(Constants.VALID_EMAIL)
             }
         }
     }

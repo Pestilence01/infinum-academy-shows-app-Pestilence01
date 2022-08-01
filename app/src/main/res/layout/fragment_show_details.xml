@@ -80,10 +80,11 @@
 
 
             <TextView
+                android:id="@+id/reviewsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/spacing_1x"
-                tools:text="Reviews"
+                android:text="Reviews"
                 android:textColor="@color/black"
                 android:textSize="@dimen/spacing_text_3x"
                 android:textStyle="bold" />

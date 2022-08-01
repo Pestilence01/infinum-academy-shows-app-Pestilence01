@@ -13,6 +13,6 @@ class ShowsViewModelFactory(
         if(modelClass.isAssignableFrom(ShowsViewModel::class.java)){
             return ShowsViewModel(database!!) as T
         }
-        throw IllegalArgumentException("Nope")
+        throw IllegalArgumentException()
     }
 }

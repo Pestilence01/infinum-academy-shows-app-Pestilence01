@@ -36,7 +36,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         super.onCreate(savedInstanceState)
 
         sharedPreferences =
-            requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
     }
 
@@ -45,10 +45,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         val justRegistered = sharedPreferences.getBoolean(Constants.REGISTERED_KEY, false)
         if (justRegistered) {
             binding.registerButton.visibility = View.GONE
-            binding.login.text = "Registration \nsuccessful!"
+            binding.login.text = Constants.REGISTRATION_SUCCESSFUL_NEWLINE
         } else {
             binding.registerButton.visibility = View.VISIBLE
-            binding.login.text = "Login"
+            binding.login.text = Constants.LOGIN
         }
 
         sharedPreferences.edit().apply() {
@@ -129,12 +129,12 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                             parentActivity.hideProgressDialog()
                             findNavController().navigate(R.id.action_loginFragment_to_showsFragment)
                             parentActivity.showErrorSnackBar(
-                                "You have successfully logged in!",
+                                Constants.SUCCESSFUL_LOGIN,
                                 false
                             )
                         } else {
                             parentActivity.showErrorSnackBar(
-                                "Please provide valid credentials",
+                                Constants.VALID_CREDENTIALS,
                                 true
                             )
                             parentActivity.hideProgressDialog()
@@ -142,7 +142,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     }
 
                     override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                        parentActivity.showErrorSnackBar("Something went wrong!", true)
+                        parentActivity.showErrorSnackBar(Constants.CHECK_CONNECTION, true)
                         parentActivity.hideProgressDialog()
                     }
 
@@ -150,7 +150,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 })
 
             } else {
-                binding.emailLoginText.setError("Please enter a valid email address!!")
+                binding.emailLoginText.setError(Constants.VALID_EMAIL)
             }
         }
     }

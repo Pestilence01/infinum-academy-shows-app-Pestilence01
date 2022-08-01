@@ -31,18 +31,23 @@ import com.example.shows_lovre_nincevic_pestilence01.database.modelfactory.Shows
 import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowsBinding
 import com.example.shows_lovre_nincevic_pestilence01.models.Show
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
-import com.example.shows_lovre_nincevic_pestilence01.utils.ImageSaver
 import com.example.shows_lovre_nincevic_pestilence01.viewmodels.ShowsViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.hdodenhof.circleimageview.CircleImageView
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 import java.lang.Exception
 
 
 class ShowsFragment : Fragment(R.layout.fragment_shows) {
+
 
     companion object {
         private const val CAMERA_PERMISSION_CODE = 1
@@ -50,6 +55,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
         private const val STORAGE_PERMISSION_CODE = 3
         private const val STORAGE_REQUEST_CODE = 4
+
     }
 
 
@@ -88,9 +94,9 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         viewModel.setContext(requireContext(), parentActivity)
 
         sharedPreferences =
-            requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
-        username = sharedPreferences.getString(Constants.USERNAME_KEY, "John Doe")!!
+        username = sharedPreferences.getString(Constants.USERNAME_KEY, Constants.DEFAULT_USERNAME)!!  // I will convert all of this to safeargs for the final assignment
 
 
         val currentPhoto = getCurrentProfilePhoto()
@@ -107,14 +113,33 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         )
         // this line hides the top of the screen (battery life, time, wifi...) allowing the application to take up the entire screen
 
+        viewModel.showsListDatabaseLiveData.observe(viewLifecycleOwner) {
+            viewModel.loadShowsFromDB()
+        }
+
         viewModel.showsListLiveData.observe(viewLifecycleOwner) {
-            if (it.isEmpty()) {
-                binding.showsRecyclerView.visibility = View.GONE
-                binding.constraintLayoutEmptyState.visibility = View.VISIBLE
-                parentActivity.hideProgressDialog()
-            } else {
-                initShowsRecyclerView(it)
-                parentActivity.hideProgressDialog()
+            if (parentActivity.isOnline()) {
+
+
+                if (it.isEmpty()) {
+                    binding.showsRecyclerView.visibility = View.GONE
+                    binding.constraintLayoutEmptyState.visibility = View.VISIBLE
+                } else {
+                    initShowsRecyclerView(it)
+                }
+
+            }
+        }
+
+        viewModel.loadShowsFromDB().observe(viewLifecycleOwner){
+            if(!parentActivity.isOnline()){
+                val showsList = mutableListOf<Show>()
+                val iterator = it.iterator()
+                while(iterator.hasNext()){  // converts the list of ShowEntity to list of Show
+                    val entity = iterator.next()
+                    showsList.add(Show(id = entity.id, average_rating = entity.average_rating, description = entity.description, image_url = entity.image_url, no_of_reviews = entity.no_of_reviews, title = entity.title))
+                }
+                initShowsRecyclerView(showsList)
             }
         }
 
@@ -122,6 +147,11 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         setupEditProfileAndBottomSheet()
 
         binding.topRated.setOnClickListener {
+            if(!parentActivity.isOnline()){
+                binding.topRated.isChecked = false
+                parentActivity.showErrorSnackBar(Constants.PROVIDE_INTERNET, true)
+            }
+
             if (binding.topRated.isChecked) {
                 viewModel.loadTopRatedShows()
             } else {
@@ -135,122 +165,142 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
     private fun setupEditProfileAndBottomSheet() {
 
         binding.editProfile.setOnClickListener {
-            val bottomSheetDialog = BottomSheetDialog(         // Created bottom sheet dialog
-                activity!!, R.style.BottomSheetDialogTheme
+            createBottomSheet()
+        }
+    }
+
+    private fun createBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(         // Created bottom sheet dialog
+            requireContext(), R.style.BottomSheetDialogTheme
+        )
+
+        val bottomSheetView = LayoutInflater.from(activity).inflate(
+            R.layout.bottom_sheet_edit_profile, activity!!.findViewById(
+                R.id.bottomSheet
             )
+        )
 
-            val bottomSheetView = LayoutInflater.from(activity).inflate(
-                R.layout.bottom_sheet_edit_profile, activity!!.findViewById(
-                    R.id.bottomSheet
-                )
-            )
+        bottomSheetDialog.setContentView(bottomSheetView)
 
-            bottomSheetDialog.setContentView(bottomSheetView)
-
-            val currentPhoto = getCurrentProfilePhoto()
+        val currentPhoto = getCurrentProfilePhoto()
 
 
-            photo =
-                bottomSheetDialog.findViewById<CircleImageView>(R.id.profilePicture)!!      // I couldn't find a way to bind the elements from the dialog so I used the old fashioned findViewById way. If you, reader, know how to fix this problem, I would appreciate it.
-            val email: TextView? =
-                bottomSheetDialog.findViewById<TextView>(R.id.emailAddressEditProfile)
-            val changePhoto: Button? = bottomSheetDialog.findViewById(R.id.changeProfilePhoto)
-            val logout: Button? = bottomSheetDialog.findViewById(R.id.logoutButton)
+        photo =
+            bottomSheetDialog.findViewById<CircleImageView>(R.id.profilePicture)!!      // I promise to use binding for this in last assignment
+        val email: TextView? =
+            bottomSheetDialog.findViewById<TextView>(R.id.emailAddressEditProfile)
+        val changePhoto: Button? = bottomSheetDialog.findViewById(R.id.changeProfilePhoto)
+        val logout: Button? = bottomSheetDialog.findViewById(R.id.logoutButton)
 
-            val emailSharedPreferences =
-                sharedPreferences.getString(Constants.EMAIL_KEY, "JohnDoe@gmail.com")!!
+        val emailSharedPreferences =
+            sharedPreferences.getString(Constants.EMAIL_KEY, Constants.DEFAULT_EMAIL)!!
 
-            email!!.text = emailSharedPreferences
+        email!!.text = emailSharedPreferences
 
-            if (currentPhoto == null) {
-                Glide.with(context!!).load(R.drawable.ic_profile_placeholder).into(photo)
-            } else {
-                Glide.with(context!!).load(currentPhoto).into(photo)
-            }
+        if (currentPhoto == null) {
+            Glide.with(context!!).load(R.drawable.ic_profile_placeholder).into(photo)
+        } else {
+            Glide.with(context!!).load(currentPhoto).into(photo)
+        }
 
-            bottomSheetDialog.show()
+        bottomSheetDialog.show()
 
-            logout?.setOnClickListener {
+        setupBottomSheetListeners(logout, bottomSheetDialog, changePhoto)
 
-                MaterialAlertDialogBuilder(
-                    context!!,
-                    R.style.AlertDialogTheme
-                ).setTitle("Are you sure you want to log out?")
-                    .setPositiveButton("Yes", object : DialogInterface.OnClickListener {
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                            parentActivity.showErrorSnackBar(
-                                "You have successfully logged out!",
-                                false
-                            )
-                            bottomSheetDialog.dismiss()
+    }
 
-                            val editor: Editor = sharedPreferences.edit()
-                            editor.putBoolean(Constants.REMEMBER_ME_KEY, false)
-                            editor.apply()
-
-                            findNavController().navigate(R.id.action_showsFragment_to_loginFragment)
-                            bottomSheetDialog.dismiss()
-                        }
-
-                    }).setNegativeButton("No", object : DialogInterface.OnClickListener {
-                    override fun onClick(p0: DialogInterface?, p1: Int) {
-                        bottomSheetDialog.dismiss()
-                    }
-
-                }).show()
-
-                bottomSheetDialog.dismiss()
-            }
-
-            changePhoto?.setOnClickListener {
-
-                MaterialAlertDialogBuilder(
-                    context!!,
-                    R.style.AlertDialogTheme
-                ).setTitle("Where do you want to take your image from?")
-                    .setPositiveButton("Storage", object : DialogInterface.OnClickListener {
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                            if (ContextCompat.checkSelfPermission(
-                                    context!!,
-                                    android.Manifest.permission.READ_EXTERNAL_STORAGE
-                                ) == PackageManager.PERMISSION_GRANTED
-                            ) {
-                                val intent = Intent(
-                                    Intent.ACTION_PICK,
-                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                                )
-                                startActivityForResult(intent, STORAGE_REQUEST_CODE)
-                            } else {
-                                ActivityCompat.requestPermissions(
-                                    activity!!,
-                                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                                    STORAGE_PERMISSION_CODE
-                                )
-                            }
-                        }
-
-                    }).setNegativeButton("Camera", object : DialogInterface.OnClickListener {
-                    override fun onClick(p0: DialogInterface?, p1: Int) {
-                        if (ContextCompat.checkSelfPermission(
-                                context!!,
-                                android.Manifest.permission.CAMERA
-                            ) == PackageManager.PERMISSION_GRANTED
-                        ) {
-                            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            startActivityForResult(intent, CAMERA_REQUEST_CODE)
-                        } else {
-                            ActivityCompat.requestPermissions(
-                                activity!!,
-                                arrayOf(android.Manifest.permission.CAMERA),
-                                CAMERA_PERMISSION_CODE
-                            )
-                        }
-                    }
-
-                }).show()
-            }
+    private fun setupBottomSheetListeners(
+        logout: Button?,
+        bottomSheetDialog: BottomSheetDialog,
+        changePhoto: Button?
+    ) {
+        logout?.setOnClickListener {
+            createLogOutAlertDialog(bottomSheetDialog)
 
         }
+
+        changePhoto?.setOnClickListener {
+            createImageAlertDialog()
+        }
+    }
+
+    private fun createImageAlertDialog() {
+        MaterialAlertDialogBuilder(
+            context!!,
+            R.style.AlertDialogTheme
+        ).setTitle(Constants.IMAGE_SOURCE)
+            .setPositiveButton(Constants.STORAGE, object : DialogInterface.OnClickListener {
+                override fun onClick(p0: DialogInterface?, p1: Int) {
+                    if (ContextCompat.checkSelfPermission(
+                            context!!,
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        val intent = Intent(
+                            Intent.ACTION_PICK,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                        )
+                        startActivityForResult(intent, STORAGE_REQUEST_CODE)
+                    } else {
+                        ActivityCompat.requestPermissions(
+                            activity!!,
+                            arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                            STORAGE_PERMISSION_CODE
+                        )
+                    }
+                }
+
+            })
+            .setNegativeButton(Constants.CAMERA, object : DialogInterface.OnClickListener {
+                override fun onClick(p0: DialogInterface?, p1: Int) {
+                    if (ContextCompat.checkSelfPermission(
+                            context!!,
+                            android.Manifest.permission.CAMERA
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        startActivityForResult(intent, CAMERA_REQUEST_CODE)
+                    } else {
+                        ActivityCompat.requestPermissions(
+                            activity!!,
+                            arrayOf(android.Manifest.permission.CAMERA),
+                            CAMERA_PERMISSION_CODE
+                        )
+                    }
+                }
+
+            }).show()
+    }
+
+    private fun createLogOutAlertDialog(bottomSheetDialog: BottomSheetDialog) {
+        MaterialAlertDialogBuilder(
+            context!!,
+            R.style.AlertDialogTheme
+        ).setTitle(Constants.LOG_OUT_PROMPT)
+            .setPositiveButton(Constants.YES, object : DialogInterface.OnClickListener {
+                override fun onClick(p0: DialogInterface?, p1: Int) {
+                    parentActivity.showErrorSnackBar(
+                        Constants.LOG_OUT_SUCCESSFUL,
+                        false
+                    )
+                    bottomSheetDialog.dismiss()
+
+                    val editor: Editor = sharedPreferences.edit()
+                    editor.putBoolean(Constants.REMEMBER_ME_KEY, false)
+                    editor.apply()
+
+                    findNavController().navigate(R.id.action_showsFragment_to_loginFragment)
+                    bottomSheetDialog.dismiss()
+                }
+
+            }).setNegativeButton(Constants.NO, object : DialogInterface.OnClickListener {
+                override fun onClick(p0: DialogInterface?, p1: Int) {
+                    bottomSheetDialog.dismiss()
+                }
+
+            }).show()
+
+        bottomSheetDialog.dismiss()
     }
 
 
@@ -268,7 +318,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
             } else {
                 Toast.makeText(
                     context!!,
-                    "Please enable the permissions for this feature in the settings!!",
+                    Constants.ENABLE_PERMISSIONS,
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -282,7 +332,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
             } else {
                 Toast.makeText(
                     context!!,
-                    "Please enable the permissions for this feature in the settings!!",
+                    Constants.ENABLE_PERMISSIONS,
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -295,43 +345,40 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == CAMERA_REQUEST_CODE) {
                 val picture: Bitmap = data!!.extras!!.get("data") as Bitmap
-                val imageSaver =
-                    ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images")
-                        .save(picture)
-                updateProfilePicture()
                 Glide.with(context!!).load(picture).into(photo)
                 Glide.with(context!!).load(picture).into(binding.editProfile)
             }
             if (requestCode == STORAGE_REQUEST_CODE) {
                 val pickedPhoto = data!!.data
-                Log.i("PATH: ", pickedPhoto!!.path.toString())
+                val file = File(pickedPhoto!!.path)
                 val source = ImageDecoder.createSource(activity!!.contentResolver, pickedPhoto!!)
                 val bitmap = ImageDecoder.decodeBitmap(source)
-                val imageSaver =
-                    ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images")
-                        .save(bitmap)
-                updateProfilePicture()
                 Glide.with(context!!).load(pickedPhoto).into(photo)
                 Glide.with(context!!).load(pickedPhoto).into(binding.editProfile)
             }
         }
     }
 
-    private fun updateProfilePicture() {    // unsuccessful attempt to update the profile photo on AWS :)
+
+    private fun updateProfilePicture(path: String) {
         sharedPreferences =
-            requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
         val accessToken = sharedPreferences.getString("accessToken", "empty")
         val client = sharedPreferences.getString("client", "empty")
         val uid = sharedPreferences.getString("uid", "empty")
 
+        val MEDIA_TYPE_PNG = "image/png".toMediaType()
+
+        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("image",
+            username, (File("").asRequestBody(MEDIA_TYPE_PNG))).build()
+
+        val request = Request.Builder().header("token-type", "Bearer").header("access-token", accessToken!!).header("client", client!!).header("uid", uid!!).url("http://localhost:3000").post(requestBody).build()
+
         ApiModule.initRetrofitAws(requireContext(), Constants.AWS_URL)
 
         ApiModule.retrofit.updateProfilePhoto(
-            accessToken!!,
-            client!!,
-            uid!!,
-            "/images/${username}.png"
+            MultipartBody.Part.create(request.body!!)
         ).enqueue(object :
             Callback<UpdateProfilePhotoResponse> {
             override fun onResponse(
@@ -346,7 +393,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
             }
 
             override fun onFailure(call: Call<UpdateProfilePhotoResponse>, t: Throwable) {
-                Log.i("FAILURE", " YES")
+                Log.i("FAILURE", " ${t.cause}")
             }
 
 
@@ -356,13 +403,11 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
     private fun getCurrentProfilePhoto(): Bitmap? {  //returns the current profile photo or null (in that case the default placeholder is used)
         val bitmap: Bitmap
         try {
-            bitmap =
-                ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images")
-                    .load()!!
+
         } catch (e: Exception) {
             return null
         }
-        return bitmap
+        return null
     }
 
 
