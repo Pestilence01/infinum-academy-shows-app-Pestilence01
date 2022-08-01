@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/bottomSheet"
+    android:background="@drawable/bottom_sheet_review_dialog_background"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/writeReview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/write_a_review"
+        android:textSize="@dimen/spacing_text_3x"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginStart="@dimen/spacing_2x"
+        android:layout_marginTop="@dimen/spacing_2x"/>
+
+    <ImageView
+        android:id="@+id/dismissBottomSheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_cancel"
+        android:layout_marginEnd="@dimen/spacing_2x"
+        android:layout_marginTop="@dimen/spacing_3x"/>
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rating="5.0"
+        android:stepSize="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/writeReview"
+        android:layout_marginStart="@dimen/spacing_2x"
+        android:layout_marginTop="@dimen/spacing_2x"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/reviewComment"
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_2x"
+        android:layout_marginEnd="@dimen/spacing_3x"
+        android:layout_marginStart="@dimen/spacing_3x"
+        app:boxStrokeColor="@color/text_input_layout_review_color"
+        android:hint="@string/write_a_review_hint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ratingBar"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/review"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/dark_purple"
+            android:textColor="@color/black"
+            android:textSize="@dimen/spacing_text_2x"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/submitButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/reviewComment"
+        android:background="@drawable/rounded_button_submit_review"
+        android:layout_marginTop="@dimen/spacing_4x"
+        android:layout_marginStart="@dimen/spacing_3x"
+        android:layout_marginEnd="@dimen/spacing_3x"
+        android:text="@string/submit"
+        android:textColor="@color/white"
+        android:textStyle="bold"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/spacing_4x"
+        app:layout_constraintTop_toBottomOf="@id/submitButton"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

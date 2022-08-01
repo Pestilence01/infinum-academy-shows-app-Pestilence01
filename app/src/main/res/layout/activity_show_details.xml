@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ShowDetailsActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_show_details_activity"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white">
+
+
+        <TextView
+            android:id="@+id/showTitleActionBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="left"
+            android:paddingLeft="@dimen/spacing_1x"
+            android:paddingTop="@dimen/spacing_1x"
+            tools:text="The Office"
+            android:textColor="@color/black"
+            android:textSize="@dimen/spacing_text_3x"
+            android:textStyle="bold" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/mainScreenScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/showTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="The Office"
+                android:visibility="gone"
+                android:textSize="@dimen/spacing_text_4x"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginBottom="@dimen/spacing_1x"
+                android:layout_marginLeft="@dimen/spacing_1x"/>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                android:layout_margin="@dimen/spacing_1x"
+                app:cardCornerRadius="@dimen/spacing_2x">
+
+                <ImageView
+                    android:id="@+id/showPicture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="350dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/the_office" />
+
+            </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:id="@+id/showDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/spacing_1x"
+                tools:text="The Office is an American mockumentary sitcom television series that depicts the everyday work lives of office employees in the Scranton, Pennsylvania, branch of the fictional Dunder Mifflin Paper Company. It aired on NBC from March 24, 2005, to May 16, 2013, lasting a total of nine seasons."
+                android:textColor="@color/black"
+                android:textSize="@dimen/spacing_text_2x" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/spacing_1x"
+                tools:text="Reviews"
+                android:textColor="@color/black"
+                android:textSize="@dimen/spacing_text_3x"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/noReviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_2x"
+                android:layout_marginBottom="@dimen/spacing_2x"
+                android:text="@string/no_reviews_yet"
+                android:textAlignment="center"
+                android:textSize="@dimen/spacing_text_2x"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/layout_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/averageReview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/spacing_1x"
+                    android:layout_marginTop="@dimen/spacing_1x"
+                    android:text="3 REVIEWS, 3.67 AVERAGE"
+                    android:textSize="@dimen/spacing_text_2x" />
+
+                <RatingBar
+                    android:id="@+id/ratingBar"
+                    style="@style/RatingBar"
+                    android:isIndicator="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/spacing_5x"
+                    android:clickable="false"
+                    android:rating="3.67"
+                    android:scaleX="0.5"
+                    android:scaleY="0.5"
+                    android:transformPivotX="@dimen/spacing_1x" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/reviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    tools:listitem="@layout/review_item" />
+
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addReviewButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/spacing_1x"
+                android:layout_marginTop="@dimen/spacing_2x"
+                android:layout_marginRight="@dimen/spacing_1x"
+                android:layout_marginBottom="@dimen/spacing_3x"
+                android:background="@drawable/rounded_button_submit_review"
+                android:text="@string/add_a_review"
+                android:textAllCaps="false"
+                android:textColor="@drawable/button_text_color_submit_review"
+                android:textSize="@dimen/spacing_text_2x"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</LinearLayout>

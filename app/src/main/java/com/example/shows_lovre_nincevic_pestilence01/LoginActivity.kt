@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import com.example.shows_lovre_nincevic_pestilence01.databinding.ActivityLoginBinding
 
-
 class LoginActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityLoginBinding
@@ -41,8 +40,7 @@ class LoginActivity : AppCompatActivity() {
                 Regex(".+@.+[.].*") // pattern ensures that there is at least one character before "@" and at least one character after "@", the "@" is always present. Updated to account for the domain
 
             if (emailPattern.containsMatchIn(binding.emailLoginText.text.toString())) {
-                val intent: Intent =
-                    Intent("start_welcome_activity")   // This intent is IMPLICIT and is defined in the Android Manifest
+                val intent: Intent = Intent(this, ShowsActivity::class.java)
                 intent.putExtra(Constants.LOGIN_EMAIL_KEY, binding.emailLoginText.text.toString())
                 startActivity(intent)
                 //finish()      -- if the user logs in, there is no reason for the Login activity to be active but for the purpose of testing I decided to leave this as is
@@ -55,13 +53,7 @@ class LoginActivity : AppCompatActivity() {
 
     //This function checks whether the email is blank and if the password field has less than 6 characters. If that is the case, the button will be disabled
     private fun toggleButtonEnabled() {
-
-        if (binding.emailLoginText.text.toString()
-                .isBlank() || binding.ETPasswordLogin.text.toString().length < 6
-        )
-            binding.loginButton.setEnabled(false)
-        else binding.loginButton.setEnabled(true)
+        binding.loginButton.isEnabled =
+            !(binding.emailLoginText.text.toString().isBlank() || binding.ETPasswordLogin.text.toString().length < 6)
     }
-
-
 }

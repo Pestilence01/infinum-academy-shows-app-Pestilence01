@@ -95,8 +95,8 @@
             android:layout_marginEnd="@dimen/spacing_3x"
             android:backgroundTint="@color/white"
             android:hint="@string/email"
+            app:boxStrokeColor="@color/text_input_layout_login_color"
             android:textColorHint="@color/white"
-            app:boxStrokeColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/pleaseLogIn">
@@ -105,11 +105,11 @@
                 android:id="@+id/emailLoginText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLength="35"
-                android:textColor="@color/white"
+                app:boxStrokeColor="@color/text_input_layout_login_color"
                 android:textColorHint="@color/white"
-                android:textSize="@dimen/spacing_text_2x"
-                app:boxStrokeColor="@color/white" />
+                android:textColor="@color/white"
+                android:maxLength="35"
+                android:textSize="@dimen/spacing_text_2x"/>
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -122,8 +122,8 @@
             android:layout_marginTop="@dimen/spacing_2x"
             android:layout_marginEnd="@dimen/spacing_3x"
             android:hint="@string/password"
+            app:boxStrokeColor="@color/text_input_layout_login_color"
             android:textColorHint="@color/white"
-            app:boxStrokeColor="@color/white"
             app:endIconMode="password_toggle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
