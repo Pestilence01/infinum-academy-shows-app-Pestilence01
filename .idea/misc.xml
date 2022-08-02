@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.1" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3105" />
         <entry key="app/src/main/res/drawable/bottom_sheet_review_dialog_background.xml" value="0.3105" />
         <entry key="app/src/main/res/drawable/bottom_sheet_rounded_corners.xml" value="0.3105" />
@@ -14,7 +15,10 @@
         <entry key="app/src/main/res/drawable/ic_cancel.xml" value="0.3105" />
         <entry key="app/src/main/res/drawable/ic_chip_checked.xml" value="0.2515" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.3105" />
+        <entry key="app/src/main/res/drawable/ic_triangle.xml" value="0.297" />
+        <entry key="app/src/main/res/drawable/ic_triangle_vector.xml" value="0.337" />
         <entry key="app/src/main/res/drawable/ic_vector_camera.xml" value="0.3105" />
+        <entry key="app/src/main/res/drawable/launch_background.xml" value="0.4015" />
         <entry key="app/src/main/res/drawable/progress_bar.xml" value="0.2505" />
         <entry key="app/src/main/res/drawable/progress_bar_style.xml" value="0.4015" />
         <entry key="app/src/main/res/drawable/rounded_button_add_review.xml" value="0.3105" />
@@ -23,6 +27,8 @@
         <entry key="app/src/main/res/drawable/rounded_button_login_toggled_on.xml" value="0.3095" />
         <entry key="app/src/main/res/drawable/rounded_button_register.xml" value="0.3095" />
         <entry key="app/src/main/res/drawable/rounded_button_submit_review.xml" value="0.3105" />
+        <entry key="app/src/main/res/drawable/splash_screen_icon.xml" value="0.296" />
+        <entry key="app/src/main/res/drawable/triangle_splash.xml" value="0.3095" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.54375" />
         <entry key="app/src/main/res/layout/activity_show_details.xml" value="0.3072916666666667" />
@@ -36,7 +42,10 @@
         <entry key="app/src/main/res/layout/fragment_show_details.xml" value="0.3072916666666667" />
         <entry key="app/src/main/res/layout/fragment_shows.xml" value="0.3072916666666667" />
         <entry key="app/src/main/res/layout/review_item.xml" value="0.3072916666666667" />
+        <entry key="app/src/main/res/layout/review_view.xml" value="0.41822916666666665" />
+        <entry key="app/src/main/res/layout/show_card_view.xml" value="0.4942708333333333" />
         <entry key="app/src/main/res/layout/show_item.xml" value="0.3072916666666667" />
+        <entry key="app/src/main/res/layout/splash_screen_icon.xml" value="0.2921875" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3105" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3105" />
       </map>

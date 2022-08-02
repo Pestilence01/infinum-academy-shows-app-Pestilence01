@@ -22,7 +22,14 @@
 
         <item name="colorPrimary">@color/white</item>
         <item name="colorAccent">@color/white</item>
-        <!-- the text input layout needs to define a primary color or it will use the default (black) one -->
+
+        <item name="android:windowSplashScreenBackground">@color/dark_purple</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/triangle_splash</item>
+        <item name="android:windowSplashScreenBrandingImage">@color/dark_purple</item>
+        <item name="android:windowSplashScreenAnimationDuration">1000</item>
+
+
+
 
 
     </style>

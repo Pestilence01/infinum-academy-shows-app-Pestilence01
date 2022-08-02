@@ -16,6 +16,7 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -412,8 +413,11 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
 
     private fun initShowsRecyclerView(list: List<Show>) {
-        adapter = ShowsAdapter(activity!!, list)
-
+        adapter = ShowsAdapter(activity!!, list) { show ->
+            findNavController().navigate(
+                R.id.action_showsFragment_to_showDetailsFragment,
+                bundleOf(Constants.SHOW_EXTRA_KEY to show.id))
+        }
         binding.showsRecyclerView.layoutManager = LinearLayoutManager(activity)
         binding.showsRecyclerView.adapter = adapter
     }

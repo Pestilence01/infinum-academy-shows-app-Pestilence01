@@ -1,14 +1,16 @@
 package com.example.shows_lovre_nincevic_pestilence01.fragments
 
+import android.animation.Animator
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.animation.BounceInterpolator
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.shows_lovre_nincevic_pestilence01.R
 import com.example.shows_lovre_nincevic_pestilence01.activities.MainActivity
@@ -56,8 +58,14 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         }.apply()
     }
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.showsTitle.visibility = View.GONE
+
+        animateTriangle()
 
         parentActivity = (activity!! as MainActivity)
 
@@ -162,6 +170,38 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         // Inflate the layout for this fragment
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    private fun animateTitle() = with(binding.showsTitle){  // this animation firstly scales the title to 0, then up-scales it by 2, then the end action makes it return to its original 1f size
+        scaleX = 0f
+        scaleY = 0f
+        animate().scaleX(1.3f).scaleY(1.3f).setDuration(350).withEndAction(Runnable {
+            animate().scaleX(1f).scaleY(1f).setDuration(200)
+        })
+    }
+
+    private fun animateTriangle() = with(binding.triangleLogin){
+        translationY = -500f  // starts from 500 units up the Y axis then falls to 0 (ending position)
+        animate().translationY(0f).setDuration(1300).setInterpolator(BounceInterpolator()).setListener(
+            object : Animator.AnimatorListener {
+                override fun onAnimationStart(p0: Animator?) {
+
+                }
+
+                override fun onAnimationEnd(p0: Animator?) {
+                    binding.showsTitle.visibility = View.VISIBLE
+                    animateTitle()  // when this animation ends, the second one can start. No need to delay the thread or use the sleep function
+                }
+
+                override fun onAnimationCancel(p0: Animator?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onAnimationRepeat(p0: Animator?) {
+                    TODO("Not yet implemented")
+                }
+
+            })
     }
 
 
