@@ -70,6 +70,6 @@ interface ShowsApiService {
     @POST("/users")
     @Multipart
     fun updateProfilePhoto(
-        @Part image: MultipartBody.Part
+        @Part formData: MultipartBody.Part
     ): Call<UpdateProfilePhotoResponse>
 }

@@ -41,8 +41,10 @@ class ShowDetailsViewModel(
         this.context = context
         sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE)
         if(parentActivity.isOnline()) {
+            parentActivity.showProgressDialog()
             getShow(id)
             getReviews(id)
+            parentActivity.hideProgressDialog()
         }
     }
 
@@ -62,7 +64,7 @@ class ShowDetailsViewModel(
         _reviewsLiveData.value = reviews
     }
 
-    fun getReviews(id: String) {
+    private fun getReviews(id: String) {
 
 
         val accessToken = sharedPreferences.getString("accessToken", "empty")

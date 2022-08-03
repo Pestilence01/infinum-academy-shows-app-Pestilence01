@@ -19,8 +19,8 @@
         android:textSize="@dimen/spacing_text_3x"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:layout_marginStart="@dimen/spacing_2x"
-        android:layout_marginTop="@dimen/spacing_2x"/>
+        android:layout_marginStart="@dimen/spacing_4x"
+        android:layout_marginTop= "@dimen/spacing_4x"/>
 
     <ImageView
         android:id="@+id/dismissBottomSheet"
@@ -40,17 +40,17 @@
         android:stepSize="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/writeReview"
-        android:layout_marginStart="@dimen/spacing_2x"
+        android:layout_marginStart="@dimen/spacing_4x"
         android:layout_marginTop="@dimen/spacing_2x"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/reviewComment"
         style="@style/TextInputLayoutStyle"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_2x"
-        android:layout_marginEnd="@dimen/spacing_3x"
-        android:layout_marginStart="@dimen/spacing_3x"
+        android:layout_marginEnd="@dimen/spacing_4x"
+        android:layout_marginStart="@dimen/spacing_4x"
         app:boxStrokeColor="@color/text_input_layout_review_color"
         android:hint="@string/write_a_review_hint"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,6 +64,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@color/dark_purple"
             android:textColor="@color/black"
+            android:padding="@dimen/spacing_2x"
             android:textSize="@dimen/spacing_text_2x"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -71,13 +72,15 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/submitButton"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/reviewComment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         android:background="@drawable/rounded_button_submit_review"
         android:layout_marginTop="@dimen/spacing_4x"
-        android:layout_marginStart="@dimen/spacing_3x"
-        android:layout_marginEnd="@dimen/spacing_3x"
+        android:layout_marginStart="@dimen/spacing_4x"
+        android:layout_marginEnd="@dimen/spacing_4x"
         android:text="@string/submit"
         android:textColor="@color/white"
         android:textStyle="bold"/>

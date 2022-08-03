@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-parcelize'
     id 'org.jetbrains.kotlin.plugin.serialization'
     id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -42,7 +43,7 @@ dependencies {
 
     implementation 'androidx.test:core-ktx:1.4.0'
     def fragment_version = "1.5.0"
-    def nav_version = "2.5.0"
+    def nav_version = "2.5.1"
     def lifecycle_version = "2.6.0-alpha01"
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
@@ -83,4 +84,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
+
+
+
 }

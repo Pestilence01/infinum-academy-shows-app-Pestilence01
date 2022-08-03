@@ -30,7 +30,7 @@
                 android:id="@+id/showItemTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/spacing_1x"
+                android:layout_marginLeft="@dimen/spacing_2x"
                 android:layout_marginTop="@dimen/spacing_1x"
                 android:textColor="@color/black"
                 android:textSize="@dimen/spacing_text_3x"
@@ -42,9 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-                android:layout_marginLeft="@dimen/spacing_1x"
-                android:layout_marginBottom="@dimen/spacing_1x"
-                android:layout_marginTop="@dimen/spacing_1x"
+                android:padding="@dimen/spacing_2x"
                 android:textSize="@dimen/spacing_text_2x" />
 
         </LinearLayout>

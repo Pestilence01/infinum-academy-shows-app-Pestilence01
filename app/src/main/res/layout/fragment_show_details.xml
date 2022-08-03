@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+
     android:theme="@style/RatingBar.AppTheme.NoActionBar"
     tools:context=".fragments.ShowDetailsFragment">
 
@@ -20,7 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="left"
-            android:paddingLeft="@dimen/spacing_1x"
             android:paddingTop="@dimen/spacing_1x"
             tools:text="The Office"
             android:textColor="@color/black"
@@ -34,6 +34,8 @@
         android:id="@+id/mainScreenScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingStart="@dimen/spacing_3x"
+        android:paddingEnd="@dimen/spacing_3x"
         android:fillViewport="true">
 
         <LinearLayout
@@ -113,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/spacing_1x"
                     android:layout_marginTop="@dimen/spacing_1x"
-                    android:text="3 REVIEWS, 3.67 AVERAGE"
+                    tools:text="3 REVIEWS, 3.67 AVERAGE"
                     android:textSize="@dimen/spacing_text_2x" />
 
                 <RatingBar

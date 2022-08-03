@@ -42,8 +42,12 @@ class ShowsViewModel(
     fun setContext(context: Context, parentActivity: MainActivity){
         this.context = context
         this.parentActivity = parentActivity
-        loadShows()
-        loadCurrentUser(parentActivity)
+        if(parentActivity.isOnline()){
+            parentActivity.showProgressDialog()
+            loadShows()
+            loadCurrentUser(parentActivity)
+            parentActivity.hideProgressDialog()
+        }
 
 
     }
