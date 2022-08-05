@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/RatingBar.AppTheme.NoActionBar"
+    android:id="@+id/bottomSheet"
+    android:background="@drawable/bottom_sheet_review_dialog_background"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profilePicture"
+        android:layout_width="104dp"
+        android:layout_height="104dp"
+        android:layout_marginTop="@dimen/spacing_3x"
+        android:layout_gravity="center"
+        app:civ_border_color="@color/dark_purple"
+        app:civ_border_width="2dp"
+        tools:src="@drawable/ic_profile_placeholder"/>
+
+    <TextView
+        android:id="@+id/emailAddressEditProfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="ruler_of_assignments@hotmail.com"
+        android:layout_marginEnd="@dimen/spacing_1x"
+        android:layout_marginStart="@dimen/spacing_1x"
+        android:textSize="@dimen/spacing_text_3x"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/spacing_2x"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/changeProfilePhoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_button_change_profile_photo"
+        android:layout_marginTop="@dimen/spacing_4x"
+        android:layout_marginEnd="@dimen/spacing_1x"
+        android:layout_marginStart="@dimen/spacing_1x"
+        android:textColor="@color/dark_purple"
+        android:text="Change profile photo"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:textSize="@dimen/spacing_text_2x"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_button_add_review"
+        android:layout_marginTop="@dimen/spacing_2x"
+        android:layout_marginEnd="@dimen/spacing_1x"
+        android:layout_marginStart="@dimen/spacing_1x"
+        android:textColor="@color/white"
+        android:text="Logout"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:textSize="@dimen/spacing_text_2x"/>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/spacing_4x"/>
+
+
+</LinearLayout>
