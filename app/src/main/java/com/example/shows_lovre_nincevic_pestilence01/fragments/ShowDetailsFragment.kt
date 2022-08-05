@@ -30,7 +30,7 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     private val binding get() = _binding!!
 
     private lateinit var adapter: ReviewsAdapter
-    private lateinit var reviewList: ArrayList<Review>
+    private lateinit var reviewList: MutableList<Review>
     private lateinit var show: Show
     private lateinit var username: String
 

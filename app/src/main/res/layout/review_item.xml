@@ -1,80 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/white">
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/profileCircularImage"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        tools:src="@drawable/ic_profile_placeholder"
         android:layout_marginLeft="@dimen/spacing_1x"
         android:layout_marginTop="@dimen/spacing_1x"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_profile_placeholder" />
 
     <TextView
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/spacing_2x"
+        android:layout_marginTop="@dimen/spacing_2x"
+        android:textColor="@color/dark_purple"
+        android:textSize="@dimen/spacing_text_2x"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/profileCircularImage"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Username"
-        android:textStyle="bold"
-        android:textSize="@dimen/spacing_text_2x"
-        android:textColor="@color/dark_purple"
-        android:layout_marginLeft="@dimen/spacing_2x"
-        android:layout_marginTop="@dimen/spacing_2x"/>
+        tools:text="Username" />
 
     <TextView
         android:id="@+id/comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profileCircularImage"
-        tools:text="This show was a complete masterpiece, I really liked it."
-        android:textColor="@color/black"
         android:layout_marginStart="@dimen/spacing_1x"
         android:layout_marginTop="@dimen/spacing_1x"
-        />
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profileCircularImage"
+        tools:text="This show was a complete masterpiece, I really liked it." />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
 
     <ImageView
         android:id="@+id/rating"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:src="@drawable/ic_baseline_star_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_2x"
         android:layout_marginEnd="@dimen/spacing_1x"
-        />
+        android:src="@drawable/ic_baseline_star_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/rating"
-        tools:text="3"
-        android:textStyle="bold"
-        android:textSize="@dimen/spacing_2x"
         android:layout_marginTop="@dimen/spacing_2x"
         android:layout_marginEnd="@dimen/spacing_1x"
-        android:textColor="@color/dark_purple"/>
+        android:textColor="@color/dark_purple"
+        android:textSize="@dimen/spacing_2x"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/rating"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="3" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/spacing_1x"
-        app:layout_constraintTop_toBottomOf="@id/comment"/>
+        app:layout_constraintTop_toBottomOf="@id/comment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
