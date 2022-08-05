@@ -22,26 +22,7 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-<<<<<<< HEAD
-        </activity>
-        <activity
-            android:name=".activities.ShowDetailsActivity"
-            android:exported="false"
-            android:theme="@style/RatingBar.AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.ShowsActivity"
-            android:exported="false"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.LoginActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"> <!-- A custom theme that hides the action bar -->
-=======
->>>>>>> 3383594288d698aa1b10fface7d07f828e03ff77
-        </activity>
+            </intent-filter></activity>
     </application>
 
 </manifest>

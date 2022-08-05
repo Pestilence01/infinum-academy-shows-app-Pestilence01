@@ -47,7 +47,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         showsList = loadShows()
 
 
-       // showsList = ArrayList<Show>(listOf())     --> uncomment this line to show EmptyState
+        // showsList = ArrayList<Show>(listOf())     --> uncomment this line to show EmptyState
 
         if(showsList.isEmpty()){
             binding.showsRecyclerView.visibility = View.GONE
