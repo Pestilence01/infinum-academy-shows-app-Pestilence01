@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/res/layout/fragment_login.xml
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 =======
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 >>>>>>> assignment3:app/src/main/res/layout/activity_login.xml
+=======
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+>>>>>>> 3383594288d698aa1b10fface7d07f828e03ff77
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -18,11 +22,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/dark_purple"
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/res/layout/fragment_login.xml
         tools:context=".activities.LoginActivity">
 =======
         tools:context=".LoginActivity">
 >>>>>>> assignment3:app/src/main/res/layout/activity_login.xml
+=======
+        tools:context=".activities.LoginActivity">
+>>>>>>> 3383594288d698aa1b10fface7d07f828e03ff77
 
 
         <ImageView
@@ -103,6 +111,7 @@
             android:layout_marginEnd="@dimen/spacing_3x"
             android:backgroundTint="@color/white"
             android:hint="@string/email"
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/res/layout/fragment_login.xml
             android:textColorHint="@color/white"
             app:boxStrokeColor="@color/text_input_layout_login_color"
@@ -110,6 +119,10 @@
             app:boxStrokeColor="@color/text_input_layout_login_color"
             android:textColorHint="@color/white"
 >>>>>>> assignment3:app/src/main/res/layout/activity_login.xml
+=======
+            android:textColorHint="@color/white"
+            app:boxStrokeColor="@color/text_input_layout_login_color"
+>>>>>>> 3383594288d698aa1b10fface7d07f828e03ff77
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/pleaseLogIn">
@@ -118,6 +131,7 @@
                 android:id="@+id/emailLoginText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/res/layout/fragment_login.xml
                 android:maxLength="35"
                 android:textColor="@color/white"
@@ -131,6 +145,13 @@
                 android:maxLength="35"
                 android:textSize="@dimen/spacing_text_2x"/>
 >>>>>>> assignment3:app/src/main/res/layout/activity_login.xml
+=======
+                android:maxLength="35"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="@dimen/spacing_text_2x"
+                app:boxStrokeColor="@color/white" />
+>>>>>>> 3383594288d698aa1b10fface7d07f828e03ff77
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -144,10 +165,14 @@
             android:layout_marginEnd="@dimen/spacing_3x"
             android:hint="@string/password"
             android:textColorHint="@color/white"
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/res/layout/fragment_login.xml
             app:boxStrokeColor="@color/text_input_layout_login_color"
 =======
 >>>>>>> assignment3:app/src/main/res/layout/activity_login.xml
+=======
+            app:boxStrokeColor="@color/text_input_layout_login_color"
+>>>>>>> 3383594288d698aa1b10fface7d07f828e03ff77
             app:endIconMode="password_toggle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -182,18 +207,26 @@
             android:textColor="@drawable/button_text_color_login"
             android:textSize="@dimen/spacing_text_2x"
             android:textStyle="bold"
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/res/layout/fragment_login.xml
             app:layout_constraintTop_toBottomOf="@id/passwordLogin" />
 =======
             app:layout_constraintTop_toBottomOf="@id/TIL_password_login" />
 >>>>>>> assignment3:app/src/main/res/layout/activity_login.xml
+=======
+            app:layout_constraintTop_toBottomOf="@id/passwordLogin" />
+>>>>>>> 3383594288d698aa1b10fface7d07f828e03ff77
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/res/layout/fragment_login.xml
 </ScrollView>
 =======
 </androidx.core.widget.NestedScrollView>
 >>>>>>> assignment3:app/src/main/res/layout/activity_login.xml
+=======
+</ScrollView>
+>>>>>>> 3383594288d698aa1b10fface7d07f828e03ff77
