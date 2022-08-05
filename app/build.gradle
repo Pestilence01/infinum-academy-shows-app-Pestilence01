@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.shows_lovre_nincevic_pestilence01"
-        minSdk 31
+        minSdk 30
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -38,6 +38,9 @@ android {
 
 dependencies {
 
+    def fragment_version = "1.5.0"
+    def nav_version = "2.5.0"
+
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
@@ -47,4 +50,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    implementation "androidx.fragment:fragment-ktx:$fragment_version"
+
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 }

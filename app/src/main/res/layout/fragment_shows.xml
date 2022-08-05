@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShowsActivity">
+    tools:context=".fragments.ShowsFragment">
 
     <TextView
         android:id="@+id/titleShows"
@@ -18,6 +18,16 @@
         android:textStyle="bold"
         android:layout_marginStart="@dimen/spacing_3x"
         android:layout_marginTop="@dimen/spacing_4x"/>
+
+    <ImageView
+        android:id="@+id/logOut"
+        android:layout_width="@dimen/spacing_4x"
+        android:layout_height="@dimen/spacing_4x"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_baseline_log_out_24"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/showsRecyclerView"
