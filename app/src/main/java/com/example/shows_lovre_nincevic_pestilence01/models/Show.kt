@@ -10,5 +10,5 @@ data class Show(
     val title: String,
     val description: String,
     @DrawableRes val imageResourceID: Int,
-    val reviews: MutableList<Review>
+    val reviews: ArrayList<Review>
 ) : Parcelable
