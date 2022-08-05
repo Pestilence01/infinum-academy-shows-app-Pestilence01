@@ -1,7 +1,10 @@
 package com.example.shows_lovre_nincevic_pestilence01.fragments
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +13,8 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shows_lovre_nincevic_pestilence01.R
@@ -18,10 +23,11 @@ import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowDet
 import com.example.shows_lovre_nincevic_pestilence01.models.Review
 import com.example.shows_lovre_nincevic_pestilence01.models.Show
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
+import com.example.shows_lovre_nincevic_pestilence01.utils.ImageSaver
+import com.example.shows_lovre_nincevic_pestilence01.viewmodels.ShowDetailsViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
-import java.math.RoundingMode
-import java.text.DecimalFormat
+import java.lang.Exception
 
 
 class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
@@ -29,9 +35,10 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     private var _binding: FragmentShowDetailsBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel by viewModels<ShowDetailsViewModel>()
+
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var adapter: ReviewsAdapter
-    private lateinit var reviewList: MutableList<Review>
-    private lateinit var show: Show
     private lateinit var username: String
 
 
@@ -40,7 +47,6 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         _binding = FragmentShowDetailsBinding.inflate(inflater,container,false)
         return binding.root
     }
@@ -48,31 +54,37 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        show = arguments!!.get(Constants.SHOW_EXTRA_KEY) as Show
-        username = arguments!!.getString(Constants.LOGIN_EMAIL_KEY).toString()
-
-        reviewList = show.reviews
-
-        adjustUI()
-
-
-        updateAverageReview()  // Sets up the review scores and adjusts them when a new review is posted
-
-        if(checkIfReviewPosted()){
-            toggleReviewButtonOff()
-        }
-
         setupActionBar()  // Sets up the action bar
 
-        initReviewsRecyclerView()
+        sharedPreferences = requireContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
+        username = sharedPreferences.getString(Constants.USERNAME_KEY, "John Doe").toString()
 
-        adjustActionBarToScroll()
+        viewModel.setShow(arguments!!.get(Constants.SHOW_EXTRA_KEY) as Show)
 
-        instantiateBottomSheet()
+        viewModel.showLiveData.observe(viewLifecycleOwner){
+            adjustUI(it.reviews)
+
+            if(viewModel.checkIfReviewPosted(username)){
+                toggleReviewButtonOff()
+            }
+
+
+            val averageReview = viewModel.calculateAverageReview()
+            updateRatingUI(averageReview, it.reviews.size)
+
+            initReviewsRecyclerView(it.reviews)
+            adjustActionBarToScroll()
+            instantiateBottomSheet(it.reviews)
+        }
 
     }
 
-    private fun instantiateBottomSheet() {
+    private fun updateRatingUI(result: String, amountOfReviews: Int) {
+        binding.averageReview.text = "$amountOfReviews REVIEWS, $result AVERAGE"
+        binding.ratingBar.rating = result.toFloat()
+    }
+
+    private fun instantiateBottomSheet(reviewList: ArrayList<Review>) {
         binding.addReviewButton.setOnClickListener {
             val bottomSheetDialog = BottomSheetDialog(         // Created bottom sheet dialog
                 activity!!, R.style.BottomSheetDialogTheme
@@ -96,14 +108,21 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
             }
 
             submit?.setOnClickListener {
-                val newReview = Review(review?.text.toString(), username, rating!!.rating.toInt(), R.drawable.ic_profile_placeholder)
+                var bitmap: Bitmap?
+                try{
+                    bitmap = ImageSaver(activity!!).setFileName("${username}.png").setDirectoryName("images").load()!!
+                } catch (e: Exception){
+                    bitmap = null
+                }
+                val newReview = Review(review?.text.toString(), username, rating!!.rating.toInt(), bitmap)
                 reviewList.add(newReview)
                 adapter.notifyItemInserted(reviewList.size - 1)
                 if(reviewList.size == 1){   // If this is the first review, it adjusts the UI
                     binding.layoutReviews.visibility = View.VISIBLE
                     binding.noReviews.visibility = View.GONE
                 }
-                updateAverageReview()
+                val averageReview = viewModel.calculateAverageReview()
+                updateRatingUI(averageReview, reviewList.size)
                 toggleReviewButtonOff()
                 Toast.makeText(activity, "Thanks for your feedback!", Toast.LENGTH_SHORT).show()
                 bottomSheetDialog.dismiss()
@@ -113,16 +132,20 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
         }
     }
 
-    private fun adjustUI() {
+    private fun adjustUI(reviewList: ArrayList<Review>) {
         if(reviewList.isEmpty()){
             binding.layoutReviews.visibility = View.GONE
             binding.noReviews.visibility = View.VISIBLE
+        } else {
+            binding.layoutReviews.visibility = View.VISIBLE
+            binding.noReviews.visibility = View.GONE
         }
 
-        binding.showTitleActionBar.text = show.title
-        binding.showTitle.text = show.title
-        binding.showDescription.text = show.description
-        binding.showPicture.setImageResource(show.imageResourceID)
+        binding.showTitleActionBar.text = viewModel.showLiveData.value!!.title
+        binding.showTitle.text = viewModel.showLiveData.value!!.title
+        binding.showDescription.text = viewModel.showLiveData.value!!.description
+        binding.showPicture.setImageResource(viewModel.showLiveData.value!!.imageResourceID)
+
     }
 
     private fun adjustActionBarToScroll() {
@@ -142,15 +165,6 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
         }
     }
 
-    private fun checkIfReviewPosted(): Boolean {
-
-        for(i in reviewList.indices){
-            if(username == reviewList[i].username)
-                return true
-        }
-
-        return false
-    }
 
     private fun toggleReviewButtonOff() {
         binding.addReviewButton.setEnabled(false)
@@ -158,22 +172,6 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     }
 
 
-    private fun updateAverageReview() {
-        var amountOfReviews: Int = 0
-        var sum: Int = 0
-
-        for(i in reviewList.indices){
-            amountOfReviews++
-            sum += reviewList[i].rating
-        }
-
-        val df = DecimalFormat("#.##")
-        df.roundingMode = RoundingMode.DOWN
-        val result = df.format(sum.toDouble() / amountOfReviews)
-
-        binding.averageReview.text = "$amountOfReviews REVIEWS, $result AVERAGE"
-        binding.ratingBar.rating = result.toFloat()
-    }
 
     private fun setupActionBar() {
 
@@ -190,8 +188,8 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
         binding.toolbarShowDetailsActivity.setNavigationOnClickListener { activity!!.onBackPressed() }
     }
 
-    private fun initReviewsRecyclerView() {
-        adapter = ReviewsAdapter(reviewList)
+    private fun initReviewsRecyclerView(reviewList: ArrayList<Review>) {
+        adapter = ReviewsAdapter(reviewList, context!!)
 
         binding.reviews.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         binding.reviews.adapter = adapter

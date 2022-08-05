@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.shows_lovre_nincevic_pestilence01"
-        minSdk 30
+        minSdk 31
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -38,8 +38,13 @@ android {
 
 dependencies {
 
+    implementation 'androidx.test:core-ktx:1.4.0'
     def fragment_version = "1.5.0"
     def nav_version = "2.5.0"
+    def lifecycle_version = "2.6.0-alpha01"
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
@@ -56,7 +61,5 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
+    implementation 'com.github.bumptech.glide:glide:4.13.2'
 }
-
-
-
