@@ -1,4 +1,4 @@
-package com.example.shows_lovre_nincevic_pestilence01
+package com.example.shows_lovre_nincevic_pestilence01.models
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
@@ -10,5 +10,5 @@ data class Show(
     val title: String,
     val description: String,
     @DrawableRes val imageResourceID: Int,
-    val reviews: MutableList<Review>
+    val reviews: ArrayList<Review>
 ) : Parcelable
