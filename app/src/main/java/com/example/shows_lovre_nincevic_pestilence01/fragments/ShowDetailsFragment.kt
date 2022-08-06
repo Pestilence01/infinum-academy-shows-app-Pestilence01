@@ -3,17 +3,13 @@ package com.example.shows_lovre_nincevic_pestilence01.fragments
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -25,13 +21,13 @@ import com.example.shows_lovre_nincevic_pestilence01.api.requests.PostReviewRequ
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.PostReviewResponse
 import com.example.shows_lovre_nincevic_pestilence01.application.ShowsApplication
 import com.example.shows_lovre_nincevic_pestilence01.database.modelfactory.ShowDetailsViewModelFactory
+import com.example.shows_lovre_nincevic_pestilence01.databinding.BottomSheetReviewLayoutBinding
 import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowDetailsBinding
 import com.example.shows_lovre_nincevic_pestilence01.models.Review
 import com.example.shows_lovre_nincevic_pestilence01.models.Show
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 import com.example.shows_lovre_nincevic_pestilence01.viewmodels.ShowDetailsViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.textfield.TextInputEditText
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -50,6 +46,11 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     private lateinit var adapter: ReviewsAdapter
     private lateinit var username: String
     private lateinit var parentActivity: MainActivity
+    private lateinit var showId: String
+
+    private lateinit var bottomBinding: BottomSheetReviewLayoutBinding
+
+    private val args: ShowDetailsFragmentArgs by navArgs()
 
 
     override fun onCreateView(
@@ -63,7 +64,9 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        parentActivity = (activity!! as MainActivity)
+        parentActivity = (requireActivity() as MainActivity)
+
+        showId = args.showId
 
         setupActionBar()  // Sets up the action bar
 
@@ -73,7 +76,7 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
         viewModel.setParameters(
             requireContext(),
-            arguments!!.get(Constants.SHOW_EXTRA_KEY).toString(),
+            showId,
             parentActivity
         )
 
@@ -83,20 +86,26 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
             }
         }
 
-        viewModel.getReviewsFromDB(arguments!!.get(Constants.SHOW_EXTRA_KEY).toString()).observe(viewLifecycleOwner){
-            val showList = mutableListOf<Review>()
-            val iterator = it.iterator()
-            while(iterator.hasNext()){
-                val entity = iterator.next()
-                showList.add(Review(id = entity.id, comment = entity.comment, rating = entity.rating, show_id = entity.id, user = entity.user))
+        viewModel.getReviewsFromDB(showId).observe(viewLifecycleOwner){
+            if(!parentActivity.isOnline()){
+                parentActivity.showProgressDialog()
+                val showList = mutableListOf<Review>()
+                val iterator = it.iterator()
+                while(iterator.hasNext()){
+                    val entity = iterator.next()
+                    showList.add(Review(id = entity.id, comment = entity.comment, rating = entity.rating, show_id = entity.id, user = entity.user))
+                }
+                viewModel.setReviews(showList)
+                parentActivity.hideProgressDialog()
             }
-            viewModel.setReviews(showList)
         }
 
-        viewModel.getShowFromDB(arguments!!.get(Constants.SHOW_EXTRA_KEY).toString()).observe(viewLifecycleOwner){
+        viewModel.getShowFromDB(showId).observe(viewLifecycleOwner){
             if(!parentActivity.isOnline()){
+                parentActivity.showProgressDialog()
                 viewModel.setShow(Show(id = it.id, average_rating = it.average_rating, description = it.description, image_url = it.image_url, no_of_reviews = it.no_of_reviews, title = it.title))
                 setupShowUI()
+                parentActivity.hideProgressDialog()
             }
         }
 
@@ -119,8 +128,7 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
     }
 
     private fun setupRatingDetails() {
-        binding.averageReview.text =
-            "${viewModel.showLiveData.value!!.no_of_reviews} REVIEWS, ${viewModel.showLiveData.value!!.average_rating} AVERAGE"
+        binding.averageReview.text = getString(R.string.review_details, viewModel.showLiveData.value!!.no_of_reviews, viewModel.showLiveData.value!!.average_rating)
         binding.ratingBar.rating = viewModel.showLiveData.value!!.average_rating!!.toFloat()
     }
 
@@ -141,34 +149,25 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
                 parentActivity.showErrorSnackBar(Constants.PROVIDE_INTERNET, true)
             } else {
                 val bottomSheetDialog = BottomSheetDialog(         // Created bottom sheet dialog
-                    activity!!, R.style.BottomSheetDialogTheme
+                    requireContext(), R.style.BottomSheetDialogTheme
                 )
 
                 val bottomSheetView = LayoutInflater.from(activity).inflate(
-                    R.layout.bottom_sheet_review_layout, activity!!.findViewById(
-                        R.id.bottomSheet
-                    )
+                    R.layout.bottom_sheet_review_layout, binding.root, false
                 )
 
                 bottomSheetDialog.setContentView(bottomSheetView)
                 bottomSheetDialog.show()
 
-                val submit: Button? =
-                    bottomSheetDialog.findViewById<Button>(R.id.submitButton)      // I couldn't find a way to bind the elements from the dialog so I used the old fashioned findViewById way. If you, reader, know how to fix this problem, I would appreciate it.
-                val rating: RatingBar? = bottomSheetDialog.findViewById<RatingBar>(R.id.ratingBar)
-                val review: TextInputEditText? = bottomSheetDialog.findViewById(R.id.review)
-                val cancel: ImageView? = bottomSheetDialog.findViewById(R.id.dismissBottomSheet)
+                bottomBinding = BottomSheetReviewLayoutBinding.bind(bottomSheetView)
 
-                cancel!!.setOnClickListener {
+                bottomBinding.dismissBottomSheet.setOnClickListener {
                     bottomSheetDialog.dismiss()
                 }
 
-                submit?.setOnClickListener {
-
-                    postReview(rating, review)
+                bottomBinding.submitButton.setOnClickListener {
+                    postReview()
                     adapter.notifyDataSetChanged()  // I do not know how to make it update in real-time. It doesn't post the review but if I leave the fragment and come back to it, it's there. Any tips on how to update it in real-time?
-
-
                     bottomSheetDialog.dismiss()
                 }
 
@@ -177,21 +176,17 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
         }
     }
 
-    private fun postReview(rating: RatingBar?, review: TextInputEditText?) {
+    private fun postReview() {
+        parentActivity.showProgressDialog()
         val request = PostReviewRequest(
-            rating!!.rating.toDouble().toInt().toString(),
-            review!!.text.toString(),
+            bottomBinding.ratingBar.rating.toDouble().toInt().toString(),
+            bottomBinding.review.text.toString(),
             viewModel.showLiveData.value!!.id
         )
 
-        val accessToken = sharedPreferences.getString("accessToken", "empty")
-        val client = sharedPreferences.getString("client", "empty")
-        val uid = sharedPreferences.getString("uid", "empty")
-
-
         ApiModule.initRetrofit(requireContext())
 
-        ApiModule.retrofit.postReviews(accessToken!!, client!!, uid!!, request).enqueue(object :
+        ApiModule.retrofit.postReviews(request).enqueue(object :
             Callback<PostReviewResponse> {
             override fun onResponse(
                 call: Call<PostReviewResponse>,
@@ -199,17 +194,20 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
             ) {
                 if (response.isSuccessful) {
                     parentActivity.showErrorSnackBar(Constants.FEEDBACK, false)
+                    parentActivity.hideProgressDialog()
                 } else {
                     parentActivity.showErrorSnackBar(
                         Constants.REVIEW_PROBLEM,
                         true
                     )
+                    parentActivity.hideProgressDialog()
 
                 }
             }
 
             override fun onFailure(call: Call<PostReviewResponse>, t: Throwable) {
                 parentActivity.showErrorSnackBar(Constants.SOMETHING_WRONG, true)
+                parentActivity.hideProgressDialog()
 
             }
 
@@ -219,7 +217,7 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
 
 
     private fun adjustActionBarToScroll() {
-        binding.mainScreenScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->      //Changes the ActionBar when scrolled. It looks janky, but I am sure a custom animation could fix it. I will look into this in the future.
+        binding.mainScreenScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
             if (scrollY > 0) {
                 (activity as AppCompatActivity).supportActionBar?.elevation = 10f
                 (activity as AppCompatActivity).supportActionBar?.title = ""
@@ -247,7 +245,7 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
             actionBar.elevation = 5f   // Adds a divider between action bar and main screen
         }
 
-        binding.toolbarShowDetailsActivity.setNavigationOnClickListener { activity!!.onBackPressed() }
+        binding.toolbarShowDetailsActivity.setNavigationOnClickListener { requireActivity().onBackPressed() }
 
         adjustActionBarToScroll()
     }
@@ -262,7 +260,7 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
             binding.noReviews.visibility = View.GONE
             binding.layoutReviews.visibility = View.VISIBLE
 
-            adapter = ReviewsAdapter(viewModel.reviewsLiveData.value!!, context!!)
+            adapter = ReviewsAdapter(viewModel.reviewsLiveData.value!!, requireContext())
 
             binding.reviews.layoutManager =
                 LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)

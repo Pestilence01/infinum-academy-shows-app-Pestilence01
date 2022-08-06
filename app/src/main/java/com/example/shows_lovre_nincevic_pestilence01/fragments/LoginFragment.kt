@@ -67,7 +67,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         animateTriangle()
 
-        parentActivity = (activity!! as MainActivity)
+        parentActivity = (requireActivity() as MainActivity)
 
         ApiModule.initRetrofit(requireContext())
 
@@ -78,7 +78,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             findNavController().navigate(R.id.action_loginFragment_to_showsFragment)
         }
 
-        activity!!.window.setFlags(
+        requireActivity().window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )

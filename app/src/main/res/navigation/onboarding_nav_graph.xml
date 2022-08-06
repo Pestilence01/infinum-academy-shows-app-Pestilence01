@@ -68,6 +68,10 @@
             android:name="com.example.shows_lovre_nincevic_pestilence01.fragments.ShowDetailsFragment"
             tools:layout="@layout/fragment_show_details">
 
+            <argument
+                android:name="show_id"
+                app:argType="string"
+                android:defaultValue="no_value"/>
         </fragment>
 
     </navigation>

@@ -41,8 +41,10 @@ class ShowDetailsViewModel(
         this.context = context
         sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE)
         if(parentActivity.isOnline()) {
+            parentActivity.showProgressDialog()
             getShow(id)
             getReviews(id)
+            parentActivity.hideProgressDialog()
         }
     }
 
@@ -62,16 +64,11 @@ class ShowDetailsViewModel(
         _reviewsLiveData.value = reviews
     }
 
-    fun getReviews(id: String) {
-
-
-        val accessToken = sharedPreferences.getString("accessToken", "empty")
-        val client = sharedPreferences.getString("client", "empty")
-        val uid = sharedPreferences.getString("uid", "empty")
+    private fun getReviews(id: String) {
 
         ApiModule.initRetrofit(context)
 
-        ApiModule.retrofit.getReviews(id, accessToken!!, client!!, uid!!).enqueue(object :
+        ApiModule.retrofit.getReviews(id).enqueue(object :
             Callback<ReviewsResponse> {
             override fun onResponse(
                 call: Call<ReviewsResponse>,
@@ -109,17 +106,13 @@ class ShowDetailsViewModel(
         }
     }
 
-    fun getShow(id: String) {
+    private fun getShow(id: String) {
 
         sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
-        val accessToken = sharedPreferences.getString("accessToken", "empty")
-        val client = sharedPreferences.getString("client", "empty")
-        val uid = sharedPreferences.getString("uid", "empty")
-
         ApiModule.initRetrofit(context)
 
-        ApiModule.retrofit.getCurrentShow(id, accessToken!!, client!!, uid!!).enqueue(object :
+        ApiModule.retrofit.getCurrentShow(id).enqueue(object :
             Callback<CurrentShowResponse> {
             override fun onResponse(
                 call: Call<CurrentShowResponse>,

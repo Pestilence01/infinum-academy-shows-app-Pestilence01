@@ -42,8 +42,12 @@ class ShowsViewModel(
     fun setContext(context: Context, parentActivity: MainActivity){
         this.context = context
         this.parentActivity = parentActivity
-        loadShows()
-        loadCurrentUser(parentActivity)
+        if(parentActivity.isOnline()){
+            parentActivity.showProgressDialog()
+            loadShows()
+            loadCurrentUser(parentActivity)
+            parentActivity.hideProgressDialog()
+        }
 
 
     }
@@ -53,15 +57,10 @@ class ShowsViewModel(
     }
 
     private fun loadCurrentUser(parentActivity: MainActivity) {
-        sharedPreferences = context.getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
-
-        val accessToken = sharedPreferences.getString("accessToken", "empty")
-        val client = sharedPreferences.getString("client", "empty")
-        val uid = sharedPreferences.getString("uid", "empty")
 
         ApiModule.initRetrofit(context)
 
-        ApiModule.retrofit.getCurrentUser(accessToken!!, client!!, uid!!).enqueue(object :
+        ApiModule.retrofit.getCurrentUser().enqueue(object :
             Callback<CurrentUserResponse> {
             override fun onResponse(call: Call<CurrentUserResponse>, response: Response<CurrentUserResponse>) {
                 if(response.isSuccessful){
@@ -81,16 +80,9 @@ class ShowsViewModel(
 
     fun loadShows(){
 
-        sharedPreferences = context.getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
-
-        val accessToken = sharedPreferences.getString("accessToken", "empty")
-        val client = sharedPreferences.getString("client", "empty")
-        val uid = sharedPreferences.getString("uid", "empty")
-
         ApiModule.initRetrofit(context)
 
-
-        ApiModule.retrofit.getShows(accessToken!!, client!!, uid!!).enqueue(object :
+        ApiModule.retrofit.getShows().enqueue(object :
             Callback<ShowsResponse> {
             override fun onResponse(call: Call<ShowsResponse>, response: Response<ShowsResponse>) {
                 if(response.isSuccessful){
@@ -125,16 +117,10 @@ class ShowsViewModel(
 
     fun loadTopRatedShows() {
 
-        sharedPreferences = context.getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
-
-        val accessToken = sharedPreferences.getString("accessToken", "empty")
-        val client = sharedPreferences.getString("client", "empty")
-        val uid = sharedPreferences.getString("uid", "empty")
-
         ApiModule.initRetrofit(context)
 
 
-        ApiModule.retrofit.getTopRatedShows(accessToken!!, client!!, uid!!).enqueue(object :
+        ApiModule.retrofit.getTopRatedShows().enqueue(object :
             Callback<ShowsResponse> {
             override fun onResponse(call: Call<ShowsResponse>, response: Response<ShowsResponse>) {
                 if(response.isSuccessful){

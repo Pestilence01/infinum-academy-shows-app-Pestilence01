@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import androidx.core.view.setPadding
 import com.bumptech.glide.Glide
 import com.example.shows_lovre_nincevic_pestilence01.R
 import com.example.shows_lovre_nincevic_pestilence01.databinding.ShowCardViewBinding
@@ -22,12 +23,7 @@ class ShowCardView @JvmOverloads constructor(
 
         clipToPadding = false
 
-        setPadding(
-            context.resources.getDimensionPixelOffset(R.dimen.spacing_1x),
-            context.resources.getDimensionPixelOffset(R.dimen.spacing_1x),
-            context.resources.getDimensionPixelOffset(R.dimen.spacing_1x),
-            context.resources.getDimensionPixelOffset(R.dimen.spacing_1x)
-        )
+        setPadding(context.resources.getDimensionPixelOffset(R.dimen.spacing_1x))
 
     }
 

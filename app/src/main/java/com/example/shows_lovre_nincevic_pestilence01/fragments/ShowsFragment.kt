@@ -3,10 +3,11 @@ package com.example.shows_lovre_nincevic_pestilence01.fragments
 import android.app.Activity
 import android.content.*
 import android.content.SharedPreferences.Editor
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,9 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -29,52 +29,45 @@ import com.example.shows_lovre_nincevic_pestilence01.api.ApiModule
 import com.example.shows_lovre_nincevic_pestilence01.api.responses.UpdateProfilePhotoResponse
 import com.example.shows_lovre_nincevic_pestilence01.application.ShowsApplication
 import com.example.shows_lovre_nincevic_pestilence01.database.modelfactory.ShowsViewModelFactory
+import com.example.shows_lovre_nincevic_pestilence01.databinding.BottomSheetEditProfileBinding
 import com.example.shows_lovre_nincevic_pestilence01.databinding.FragmentShowsBinding
 import com.example.shows_lovre_nincevic_pestilence01.models.Show
 import com.example.shows_lovre_nincevic_pestilence01.utils.Constants
 import com.example.shows_lovre_nincevic_pestilence01.viewmodels.ShowsViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import de.hdodenhof.circleimageview.CircleImageView
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.lang.Exception
 
 
 class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
 
-    companion object {
-        private const val CAMERA_PERMISSION_CODE = 1
-        private const val CAMERA_REQUEST_CODE = 2
-
-        private const val STORAGE_PERMISSION_CODE = 3
-        private const val STORAGE_REQUEST_CODE = 4
-
-    }
-
 
     private var _binding: FragmentShowsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ShowsViewModel by viewModels{
+    private lateinit var cameraIntent: ActivityResultLauncher<Intent>
+    private lateinit var storageIntent: ActivityResultLauncher<Intent>
+
+    private val viewModel: ShowsViewModel by viewModels {
         ShowsViewModelFactory((requireActivity().application as ShowsApplication).database)
     }
-
-
-    private lateinit var photo: CircleImageView
 
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var adapter: ShowsAdapter
     private lateinit var username: String
     private lateinit var parentActivity: MainActivity
+    private lateinit var bottomBinding: BottomSheetEditProfileBinding
 
 
     override fun onCreateView(
@@ -88,34 +81,46 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupOnResultListeners()
 
-        parentActivity = (activity!! as MainActivity)
+        parentActivity = (requireActivity() as MainActivity)
 
 
         viewModel.setContext(requireContext(), parentActivity)
 
         sharedPreferences =
-            requireContext().getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences(
+                Constants.SHARED_PREFERENCES,
+                Context.MODE_PRIVATE
+            )
 
-        username = sharedPreferences.getString(Constants.USERNAME_KEY, Constants.DEFAULT_USERNAME)!!  // I will convert all of this to safeargs for the final assignment
+        username = sharedPreferences.getString(
+            Constants.USERNAME_KEY,
+            Constants.DEFAULT_USERNAME
+        )!!
 
 
         val currentPhoto = getCurrentProfilePhoto()
 
         if (currentPhoto == null) {  // If the user hasn't changed their profile, it will be set to the default one
-            Glide.with(context!!).load(R.drawable.ic_profile_placeholder).into(binding.editProfile)
+            Glide.with(requireContext()).load(R.drawable.ic_profile_placeholder).into(binding.editProfile)
         } else {
-            Glide.with(context!!).load(currentPhoto).into(binding.editProfile)
+            Glide.with(requireContext()).load(currentPhoto).into(binding.editProfile)
         }
 
-        activity!!.window.setFlags(
+        requireActivity().window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
         // this line hides the top of the screen (battery life, time, wifi...) allowing the application to take up the entire screen
 
         viewModel.showsListDatabaseLiveData.observe(viewLifecycleOwner) {
-            viewModel.loadShowsFromDB()
+            if (!parentActivity.isOnline()){
+                parentActivity.showProgressDialog()
+                viewModel.loadShowsFromDB()
+                parentActivity.hideProgressDialog()
+            }
+
         }
 
         viewModel.showsListLiveData.observe(viewLifecycleOwner) {
@@ -132,13 +137,22 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
             }
         }
 
-        viewModel.loadShowsFromDB().observe(viewLifecycleOwner){
-            if(!parentActivity.isOnline()){
+        viewModel.loadShowsFromDB().observe(viewLifecycleOwner) {
+            if (!parentActivity.isOnline()) {
                 val showsList = mutableListOf<Show>()
                 val iterator = it.iterator()
-                while(iterator.hasNext()){  // converts the list of ShowEntity to list of Show
+                while (iterator.hasNext()) {  // converts the list of ShowEntity to list of Show
                     val entity = iterator.next()
-                    showsList.add(Show(id = entity.id, average_rating = entity.average_rating, description = entity.description, image_url = entity.image_url, no_of_reviews = entity.no_of_reviews, title = entity.title))
+                    showsList.add(
+                        Show(
+                            id = entity.id,
+                            average_rating = entity.average_rating,
+                            description = entity.description,
+                            image_url = entity.image_url,
+                            no_of_reviews = entity.no_of_reviews,
+                            title = entity.title
+                        )
+                    )
                 }
                 initShowsRecyclerView(showsList)
             }
@@ -148,7 +162,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         setupEditProfileAndBottomSheet()
 
         binding.topRated.setOnClickListener {
-            if(!parentActivity.isOnline()){
+            if (!parentActivity.isOnline()) {
                 binding.topRated.isChecked = false
                 parentActivity.showErrorSnackBar(Constants.PROVIDE_INTERNET, true)
             }
@@ -157,6 +171,33 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
                 viewModel.loadTopRatedShows()
             } else {
                 viewModel.loadShows()
+            }
+        }
+
+    }
+
+    private fun setupOnResultListeners() {
+        cameraIntent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if(result.resultCode == Activity.RESULT_OK){
+                val picture: Bitmap = result.data!!.extras!!.get("data") as Bitmap
+                val filePath = bitmapToFile(picture, "${System.currentTimeMillis()}.png")
+                updateProfilePicture(filePath!!)
+                Glide.with(requireContext()).load(Uri.fromFile(filePath))
+                    .into(bottomBinding.profilePicture)
+                Glide.with(requireContext()).load(Uri.fromFile(filePath)).into(binding.editProfile)
+            }
+        }
+
+        storageIntent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+            if(result.resultCode == Activity.RESULT_OK){
+                val pickedPhoto = result.data!!.data
+                val source = ImageDecoder.createSource(requireContext().contentResolver, pickedPhoto!!)
+                val bitmap = ImageDecoder.decodeBitmap(source)
+                val filePath = bitmapToFile(bitmap, "${System.currentTimeMillis()}.png")
+                updateProfilePicture(filePath!!)
+                Glide.with(requireContext()).load(Uri.fromFile(filePath))
+                    .into(bottomBinding.profilePicture)
+                Glide.with(requireContext()).load(Uri.fromFile(filePath)).into(binding.editProfile)
             }
         }
 
@@ -176,37 +217,30 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
         )
 
         val bottomSheetView = LayoutInflater.from(activity).inflate(
-            R.layout.bottom_sheet_edit_profile, activity!!.findViewById(
-                R.id.bottomSheet
+            R.layout.bottom_sheet_edit_profile, binding.root, false
             )
-        )
-
-        bottomSheetDialog.setContentView(bottomSheetView)
-
-        val currentPhoto = getCurrentProfilePhoto()
 
 
-        photo =
-            bottomSheetDialog.findViewById<CircleImageView>(R.id.profilePicture)!!      // I promise to use binding for this in last assignment
-        val email: TextView? =
-            bottomSheetDialog.findViewById<TextView>(R.id.emailAddressEditProfile)
-        val changePhoto: Button? = bottomSheetDialog.findViewById(R.id.changeProfilePhoto)
-        val logout: Button? = bottomSheetDialog.findViewById(R.id.logoutButton)
+        bottomSheetDialog.setContentView(bottomSheetView.rootView)
+
+        bottomBinding = BottomSheetEditProfileBinding.bind(bottomSheetView)
+
 
         val emailSharedPreferences =
             sharedPreferences.getString(Constants.EMAIL_KEY, Constants.DEFAULT_EMAIL)!!
 
-        email!!.text = emailSharedPreferences
+        bottomBinding.emailAddressEditProfile!!.text = emailSharedPreferences
 
-        if (currentPhoto == null) {
-            Glide.with(context!!).load(R.drawable.ic_profile_placeholder).into(photo)
-        } else {
-            Glide.with(context!!).load(currentPhoto).into(photo)
-        }
+        Glide.with(requireContext()).load(R.drawable.ic_profile_placeholder)
+            .into(bottomBinding.profilePicture)
 
         bottomSheetDialog.show()
 
-        setupBottomSheetListeners(logout, bottomSheetDialog, changePhoto)
+        setupBottomSheetListeners(
+            bottomBinding.logoutButton,
+            bottomSheetDialog,
+            bottomBinding.changeProfilePhoto
+        )
 
     }
 
@@ -227,47 +261,26 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
     private fun createImageAlertDialog() {
         MaterialAlertDialogBuilder(
-            context!!,
+            requireContext(),
             R.style.AlertDialogTheme
         ).setTitle(Constants.IMAGE_SOURCE)
             .setPositiveButton(Constants.STORAGE, object : DialogInterface.OnClickListener {
                 override fun onClick(p0: DialogInterface?, p1: Int) {
-                    if (ContextCompat.checkSelfPermission(
-                            context!!,
-                            android.Manifest.permission.READ_EXTERNAL_STORAGE
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        val intent = Intent(
-                            Intent.ACTION_PICK,
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                        )
-                        startActivityForResult(intent, STORAGE_REQUEST_CODE)
-                    } else {
-                        ActivityCompat.requestPermissions(
-                            activity!!,
-                            arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                            STORAGE_PERMISSION_CODE
-                        )
-                    }
+                    val intent = Intent(
+                        Intent.ACTION_PICK,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                    )
+                    storageIntent.launch(intent)
                 }
+            }
 
-            })
+            )
             .setNegativeButton(Constants.CAMERA, object : DialogInterface.OnClickListener {
                 override fun onClick(p0: DialogInterface?, p1: Int) {
-                    if (ContextCompat.checkSelfPermission(
-                            context!!,
-                            android.Manifest.permission.CAMERA
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                        startActivityForResult(intent, CAMERA_REQUEST_CODE)
-                    } else {
-                        ActivityCompat.requestPermissions(
-                            activity!!,
-                            arrayOf(android.Manifest.permission.CAMERA),
-                            CAMERA_PERMISSION_CODE
-                        )
-                    }
+
+                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    cameraIntent.launch(intent)
+
                 }
 
             }).show()
@@ -275,7 +288,7 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
     private fun createLogOutAlertDialog(bottomSheetDialog: BottomSheetDialog) {
         MaterialAlertDialogBuilder(
-            context!!,
+            requireContext(),
             R.style.AlertDialogTheme
         ).setTitle(Constants.LOG_OUT_PROMPT)
             .setPositiveButton(Constants.YES, object : DialogInterface.OnClickListener {
@@ -305,76 +318,55 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
     }
 
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    private fun bitmapToFile(
+        bitmap: Bitmap,
+        fileNameToSave: String
+    ): File? { // File name like "image.png"
+        //create a file to write bitmap data
+        var file: File? = null
+        return try {
+            file = File(
+                requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                    .toString() + File.separator + fileNameToSave
+            )
+            file.createNewFile()
 
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(intent, CAMERA_REQUEST_CODE)
-            } else {
-                Toast.makeText(
-                    context!!,
-                    Constants.ENABLE_PERMISSIONS,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+            //Convert bitmap to byte array
+            val bos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos) // YOU can also save it in JPEG
+            val bitmapdata = bos.toByteArray()
 
-        if (requestCode == STORAGE_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                val intent =
-                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                startActivityForResult(intent, STORAGE_REQUEST_CODE)
-            } else {
-                Toast.makeText(
-                    context!!,
-                    Constants.ENABLE_PERMISSIONS,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == CAMERA_REQUEST_CODE) {
-                val picture: Bitmap = data!!.extras!!.get("data") as Bitmap
-                Glide.with(context!!).load(picture).into(photo)
-                Glide.with(context!!).load(picture).into(binding.editProfile)
-            }
-            if (requestCode == STORAGE_REQUEST_CODE) {
-                val pickedPhoto = data!!.data
-                val file = File(pickedPhoto!!.path)
-                val source = ImageDecoder.createSource(activity!!.contentResolver, pickedPhoto!!)
-                val bitmap = ImageDecoder.decodeBitmap(source)
-                Glide.with(context!!).load(pickedPhoto).into(photo)
-                Glide.with(context!!).load(pickedPhoto).into(binding.editProfile)
-            }
+            //write the bytes in file
+            val fos = FileOutputStream(file)
+            fos.write(bitmapdata)
+            fos.flush()
+            fos.close()
+            file
+        } catch (e: Exception) {
+            e.printStackTrace()
+            file // it will return null
         }
     }
 
 
-    private fun updateProfilePicture(path: String) {
+    private fun updateProfilePicture(filePath: File) {
         sharedPreferences =
-            requireContext().getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE)
+            requireContext().getSharedPreferences(
+                Constants.SHARED_PREFERENCES,
+                Context.MODE_PRIVATE
+            )
 
         val accessToken = sharedPreferences.getString("accessToken", "empty")
         val client = sharedPreferences.getString("client", "empty")
         val uid = sharedPreferences.getString("uid", "empty")
 
-        val MEDIA_TYPE_PNG = "image/png".toMediaType()
 
-        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("image",
-            username, (File("").asRequestBody(MEDIA_TYPE_PNG))).build()
+        val formData =
+            MultipartBody.Part.createFormData("image", filePath.name, filePath.asRequestBody())
 
-        val request = Request.Builder().header("token-type", "Bearer").header("access-token", accessToken!!).header("client", client!!).header("uid", uid!!).url("http://localhost:3000").post(requestBody).build()
+        val request =
+            Request.Builder().header("access-token", accessToken!!).header("client", client!!)
+                .header("uid", uid!!).url(Constants.AWS_URL).post(formData.body).build()
 
         ApiModule.initRetrofitAws(requireContext(), Constants.AWS_URL)
 
@@ -394,7 +386,10 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
             }
 
             override fun onFailure(call: Call<UpdateProfilePhotoResponse>, t: Throwable) {
-                Log.i("FAILURE", " ${t.cause}")
+                Log.i(
+                    "FAILURE",
+                    " ${t.cause}"
+                )  // the error always says the connection to the server failed
             }
 
 
@@ -413,10 +408,9 @@ class ShowsFragment : Fragment(R.layout.fragment_shows) {
 
 
     private fun initShowsRecyclerView(list: List<Show>) {
-        adapter = ShowsAdapter(activity!!, list) { show ->
-            findNavController().navigate(
-                R.id.action_showsFragment_to_showDetailsFragment,
-                bundleOf(Constants.SHOW_EXTRA_KEY to show.id))
+        adapter = ShowsAdapter(requireActivity(), list) { show ->
+            val action = ShowsFragmentDirections.actionShowsFragmentToShowDetailsFragment(showId = show.id)
+            findNavController().navigate(action)
         }
         binding.showsRecyclerView.layoutManager = LinearLayoutManager(activity)
         binding.showsRecyclerView.adapter = adapter
