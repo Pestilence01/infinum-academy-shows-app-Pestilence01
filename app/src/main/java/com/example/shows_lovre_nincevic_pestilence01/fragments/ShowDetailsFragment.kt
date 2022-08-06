@@ -184,14 +184,9 @@ class ShowDetailsFragment : Fragment(R.layout.fragment_show_details) {
             viewModel.showLiveData.value!!.id
         )
 
-        val accessToken = sharedPreferences.getString("accessToken", "empty")
-        val client = sharedPreferences.getString("client", "empty")
-        val uid = sharedPreferences.getString("uid", "empty")
-
-
         ApiModule.initRetrofit(requireContext())
 
-        ApiModule.retrofit.postReviews(accessToken!!, client!!, uid!!, request).enqueue(object :
+        ApiModule.retrofit.postReviews(request).enqueue(object :
             Callback<PostReviewResponse> {
             override fun onResponse(
                 call: Call<PostReviewResponse>,

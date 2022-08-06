@@ -16,54 +16,27 @@ interface ShowsApiService {
     @POST("/users/sign_in")
     fun loginUser(@Body request: LoginRequest): Call<LoginResponse>
 
-    @Headers("token-type: Bearer")
     @GET("/shows")
-    fun getShows(
-        @Header("access-token") accessToken: String,
-        @Header("client") client: String,
-        @Header("uid") uid: String
-    ): Call<ShowsResponse>
+    fun getShows(): Call<ShowsResponse>
 
-    @Headers("token-type: Bearer")
     @GET("/shows/top_rated")
-    fun getTopRatedShows(
-        @Header("access-token") accessToken: String,
-        @Header("client") client: String,
-        @Header("uid") uid: String
-    ): Call<ShowsResponse>
+    fun getTopRatedShows(): Call<ShowsResponse>
 
-    @Headers("token-type: Bearer")
     @GET("/users/me")
-    fun getCurrentUser(
-        @Header("access-token") accessToken: String,
-        @Header("client") client: String,
-        @Header("uid") uid: String
-    ): Call<CurrentUserResponse>
+    fun getCurrentUser(): Call<CurrentUserResponse>
 
-    @Headers("token-type: Bearer")
     @GET("/shows/{id}")
     fun getCurrentShow(
         @Path("id") id: String,
-        @Header("access-token") accessToken: String,
-        @Header("client") client: String,
-        @Header("uid") uid: String
     ): Call<CurrentShowResponse>
 
-    @Headers("token-type: Bearer")
     @GET("/shows/{show_id}/reviews")
     fun getReviews(
-        @Path("show_id") id: String,
-        @Header("access-token") accessToken: String,
-        @Header("client") client: String,
-        @Header("uid") uid: String
+        @Path("show_id") id: String
     ): Call<ReviewsResponse>
 
-    @Headers("token-type: Bearer")
     @POST("/reviews")
     fun postReviews(
-        @Header("access-token") accessToken: String,
-        @Header("client") client: String,
-        @Header("uid") uid: String,
         @Body request: PostReviewRequest
     ): Call<PostReviewResponse>
 

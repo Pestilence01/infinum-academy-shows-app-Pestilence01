@@ -19,7 +19,7 @@
         android:layout_marginStart="@dimen/spacing_4x"
         android:layout_marginTop="64dp"/>
 
-    <com.google.android.material.imageview.ShapeableImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/editProfile"
         android:layout_width="@dimen/spacing_4x"
         android:layout_height="@dimen/spacing_4x"
